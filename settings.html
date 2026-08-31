@@ -1,0 +1,597 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>الإعدادات - Rased AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    body { font-family: 'Cairo', sans-serif; }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+  <!-- رأس الصفحة -->
+  <header class="bg-indigo-600 text-white py-4 shadow-md">
+    <div class="container mx-auto flex justify-between items-center px-4">
+      <h1 class="text-xl font-bold">⚙️ الإعدادات - Rased AI</h1>
+      <div class="flex items-center space-x-4">
+        <a href="dashboard.html" class="bg-indigo-700 hover:bg-indigo-800 px-3 py-2 rounded-lg transition">
+          <i class="fas fa-arrow-right mr-2"></i>العودة للوحة التحكم
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- محتوى الصفحة -->
+  <main class="container mx-auto px-4 py-8">
+    
+    <!-- رسائل التأكيد والأخطاء -->
+    <div id="success-message" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+      <div class="flex">
+        <i class="fas fa-check-circle mr-2 mt-1"></i>
+        <span id="success-text"></span>
+      </div>
+    </div>
+
+    <div id="error-message" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+      <div class="flex">
+        <i class="fas fa-exclamation-circle mr-2 mt-1"></i>
+        <span id="error-text"></span>
+      </div>
+    </div>
+
+    <div class="max-w-4xl mx-auto">
+      
+      <!-- المعلومات الشخصية -->
+      <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+        <div class="flex items-center mb-6">
+          <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mr-4">
+            <i class="fas fa-user text-indigo-600 text-xl"></i>
+          </div>
+          <h2 class="text-2xl font-bold text-gray-800">المعلومات الشخصية</h2>
+        </div>
+
+        <form id="personal-info-form">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- الاسم الكامل -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                <i class="fas fa-user mr-2"></i>الاسم الكامل *
+              </label>
+              <input type="text" id="full-name" 
+                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" 
+                     placeholder="أدخل اسمك الكامل" required>
+            </div>
+
+            <!-- البريد الإلكتروني -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                <i class="fas fa-envelope mr-2"></i>البريد الإلكتروني *
+              </label>
+              <input type="email" id="email" 
+                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" 
+                     placeholder="your@email.com" required>
+            </div>
+
+            <!-- تاريخ الميلاد -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                <i class="fas fa-calendar mr-2"></i>تاريخ الميلاد
+              </label>
+              <input type="date" id="birth-date" 
+                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+
+            <!-- الجنس -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                <i class="fas fa-user-friends mr-2"></i>الجنس
+              </label>
+              <select id="gender" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                <option value="">اختر الجنس</option>
+                <option value="male">ذكر</option>
+                <option value="female">أنثى</option>
+                <option value="prefer_not_to_say">أفضل عدم الذكر</option>
+              </select>
+            </div>
+
+            <!-- رقم الهاتف -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                <i class="fas fa-phone mr-2"></i>رقم الهاتف
+              </label>
+              <input type="tel" id="phone" 
+                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" 
+                     placeholder="0555123456">
+            </div>
+
+            <!-- الولاية -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                <i class="fas fa-map-marker-alt mr-2"></i>الولاية
+              </label>
+              <select id="state" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                <option value="">اختر الولاية</option>
+                <option value="الجزائر">الجزائر</option>
+                <option value="وهران">وهران</option>
+                <option value="قسنطينة">قسنطينة</option>
+                <option value="عنابة">عنابة</option>
+                <option value="البليدة">البليدة</option>
+                <option value="باتنة">باتنة</option>
+                <option value="سطيف">سطيف</option>
+                <option value="سيدي بلعباس">سيدي بلعباس</option>
+                <option value="بسكرة">بسكرة</option>
+                <option value="تلمسان">تلمسان</option>
+                <option value="بجاية">بجاية</option>
+                <option value="تبسة">تبسة</option>
+                <option value="ورقلة">ورقلة</option>
+                <option value="سكيكدة">سكيكدة</option>
+                <option value="جيجل">جيجل</option>
+                <option value="المسيلة">المسيلة</option>
+                <option value="المدية">المدية</option>
+                <option value="مستغانم">مستغانم</option>
+                <option value="الشلف">الشلف</option>
+                <option value="الاغواط">الاغواط</option>
+                <option value="غرداية">غرداية</option>
+                <option value="خنشلة">خنشلة</option>
+                <option value="سوق أهراس">سوق أهراس</option>
+                <option value="الطارف">الطارف</option>
+                <option value="تيزي وزو">تيزي وزو</option>
+                <option value="البويرة">البويرة</option>
+                <option value="برج بوعريريج">برج بوعريريج</option>
+                <option value="بومرداس">بومرداس</option>
+                <option value="الجلفة">الجلفة</option>
+                <option value="تيارت">تيارت</option>
+                <option value="بشار">بشار</option>
+                <option value="الوادي">الوادي</option>
+                <option value="النعامة">النعامة</option>
+                <option value="عين الدفلى">عين الدفلى</option>
+                <option value="معسكر">معسكر</option>
+                <option value="ميلة">ميلة</option>
+                <option value="أم البواقي">أم البواقي</option>
+                <option value="الباهية">الباهية</option>
+                <option value="تمنراست">تمنراست</option>
+                <option value="إليزي">إليزي</option>
+                <option value="تندوف">تندوف</option>
+                <option value="أدرار">أدرار</option>
+                <option value="غليزان">غليزان</option>
+                <option value="تيسمسيلت">تيسمسيلت</option>
+                <option value="العين الصفراء">العين الصفراء</option>
+                <option value="توقرت">توقرت</option>
+                <option value="عين تموشنت">عين تموشنت</option>
+                <option value="الوقت">الوقت</option>
+              </select>
+            </div>
+
+            <!-- المهنة -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                <i class="fas fa-briefcase mr-2"></i>المهنة / التخصص
+              </label>
+              <input type="text" id="profession" 
+                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" 
+                     placeholder="مثل: مطور برمجيات، مدير مشروع، رائد أعمال">
+            </div>
+
+            <!-- مستوى التعليم -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                <i class="fas fa-graduation-cap mr-2"></i>مستوى التعليم
+              </label>
+              <select id="education" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                <option value="">اختر مستوى التعليم</option>
+                <option value="ثانوي">ثانوي</option>
+                <option value="جامعي">جامعي (ليسانس/بكالوريوس)</option>
+                <option value="ماجستير">ماجستير</option>
+                <option value="دكتوراه">دكتوراه</option>
+                <option value="تكوين مهني">تكوين مهني</option>
+                <option value="أخرى">أخرى</option>
+              </select>
+            </div>
+
+          </div>
+
+          <!-- نبذة شخصية -->
+          <div class="mt-6">
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              <i class="fas fa-info-circle mr-2"></i>نبذة شخصية
+            </label>
+            <textarea id="bio" rows="4" 
+                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" 
+                      placeholder="اكتب نبذة مختصرة عن نفسك ومجال عملك..."></textarea>
+          </div>
+
+          <div class="mt-8">
+            <button type="submit" 
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg transition">
+              <i class="fas fa-save mr-2"></i>حفظ التغييرات
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- تغيير كلمة المرور -->
+      <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+        <div class="flex items-center mb-6">
+          <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mr-4">
+            <i class="fas fa-lock text-orange-600 text-xl"></i>
+          </div>
+          <h2 class="text-2xl font-bold text-gray-800">تغيير كلمة المرور</h2>
+        </div>
+
+        <form id="password-form">
+          <div class="space-y-6">
+            
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                كلمة المرور الحالية *
+              </label>
+              <input type="password" id="current-password" 
+                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500" 
+                     placeholder="أدخل كلمة المرور الحالية" required>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                كلمة المرور الجديدة *
+              </label>
+              <input type="password" id="new-password" 
+                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500" 
+                     placeholder="أدخل كلمة المرور الجديدة" required>
+              <p class="text-sm text-gray-500 mt-1">يجب أن تحتوي على 8 أحرف على الأقل</p>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                تأكيد كلمة المرور الجديدة *
+              </label>
+              <input type="password" id="confirm-password" 
+                     class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500" 
+                     placeholder="أعد إدخال كلمة المرور الجديدة" required>
+            </div>
+
+          </div>
+
+          <div class="mt-8">
+            <button type="submit" 
+                    class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-8 rounded-lg transition">
+              <i class="fas fa-key mr-2"></i>تغيير كلمة المرور
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- إعدادات الإشعارات -->
+      <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+        <div class="flex items-center mb-6">
+          <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+            <i class="fas fa-bell text-green-600 text-xl"></i>
+          </div>
+          <h2 class="text-2xl font-bold text-gray-800">إعدادات الإشعارات</h2>
+        </div>
+
+        <form id="notifications-form">
+          <div class="space-y-4">
+            
+            <div class="flex items-center justify-between py-3 border-b">
+              <div>
+                <h3 class="font-medium text-gray-900">إشعارات البريد الإلكتروني</h3>
+                <p class="text-sm text-gray-500">استقبال تحديثات المشاريع والتوصيات</p>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="email-notifications" class="sr-only peer">
+                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              </label>
+            </div>
+
+            <div class="flex items-center justify-between py-3 border-b">
+              <div>
+                <h3 class="font-medium text-gray-900">إشعارات تحليل البيانات</h3>
+                <p class="text-sm text-gray-500">عندما يتم الانتهاء من تحليل ملفات Excel</p>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="analysis-notifications" class="sr-only peer">
+                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              </label>
+            </div>
+
+            <div class="flex items-center justify-between py-3">
+              <div>
+                <h3 class="font-medium text-gray-900">نصائح أسبوعية</h3>
+                <p class="text-sm text-gray-500">نصائح وإرشادات لتطوير مشروعك</p>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="tips-notifications" class="sr-only peer">
+                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              </label>
+            </div>
+
+          </div>
+
+          <div class="mt-8">
+            <button type="submit" 
+                    class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg transition">
+              <i class="fas fa-bell mr-2"></i>حفظ إعدادات الإشعارات
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- حذف الحساب -->
+      <div class="bg-white rounded-lg shadow-lg p-8 border-2 border-red-200">
+        <div class="flex items-center mb-6">
+          <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mr-4">
+            <i class="fas fa-trash text-red-600 text-xl"></i>
+          </div>
+          <h2 class="text-2xl font-bold text-red-800">المنطقة الخطيرة</h2>
+        </div>
+
+        <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+          <div class="flex">
+            <i class="fas fa-exclamation-triangle text-red-500 mr-2 mt-1"></i>
+            <div>
+              <h3 class="font-medium text-red-800 mb-1">حذف الحساب</h3>
+              <p class="text-sm text-red-700">
+                سيتم حذف جميع بياناتك ومشاريعك نهائياً. هذا الإجراء لا يمكن التراجع عنه.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <button onclick="confirmDeleteAccount()" 
+                class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-lg transition">
+          <i class="fas fa-trash mr-2"></i>حذف الحساب نهائياً
+        </button>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    // التحقق من تسجيل الدخول
+    window.addEventListener('load', function() {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      if (!currentUser) {
+        alert('يجب تسجيل الدخول أولاً');
+        window.location.href = 'index.html';
+        return;
+      }
+      loadUserData();
+    });
+
+    // تحميل بيانات المستخدم
+    function loadUserData() {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      if (!currentUser) return;
+
+      // تحميل البيانات الأساسية
+      document.getElementById('full-name').value = currentUser.name || '';
+      document.getElementById('email').value = currentUser.email || '';
+      
+      // تحميل البيانات الإضافية إذا كانت موجودة
+      if (currentUser.profile) {
+        document.getElementById('birth-date').value = currentUser.profile.birthDate || '';
+        document.getElementById('gender').value = currentUser.profile.gender || '';
+        document.getElementById('phone').value = currentUser.profile.phone || '';
+        document.getElementById('state').value = currentUser.profile.state || '';
+        document.getElementById('profession').value = currentUser.profile.profession || '';
+        document.getElementById('education').value = currentUser.profile.education || '';
+        document.getElementById('bio').value = currentUser.profile.bio || '';
+      }
+
+      // تحميل إعدادات الإشعارات
+      if (currentUser.notifications) {
+        document.getElementById('email-notifications').checked = currentUser.notifications.email !== false;
+        document.getElementById('analysis-notifications').checked = currentUser.notifications.analysis !== false;
+        document.getElementById('tips-notifications').checked = currentUser.notifications.tips !== false;
+      } else {
+        // قيم افتراضية
+        document.getElementById('email-notifications').checked = true;
+        document.getElementById('analysis-notifications').checked = true;
+        document.getElementById('tips-notifications').checked = true;
+      }
+    }
+
+    // حفظ المعلومات الشخصية
+    document.getElementById('personal-info-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      if (!currentUser) return;
+
+      const formData = {
+        userId: currentUser.id,
+        name: document.getElementById('full-name').value,
+        email: document.getElementById('email').value,
+        profile: {
+          birthDate: document.getElementById('birth-date').value,
+          gender: document.getElementById('gender').value,
+          phone: document.getElementById('phone').value,
+          state: document.getElementById('state').value,
+          profession: document.getElementById('profession').value,
+          education: document.getElementById('education').value,
+          bio: document.getElementById('bio').value
+        }
+      };
+
+      try {
+        const response = await fetch('/update-user-profile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          // تحديث البيانات في localStorage
+          const updatedUser = { ...currentUser, ...formData, profile: formData.profile };
+          localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+          
+          showSuccess('تم حفظ المعلومات الشخصية بنجاح');
+        } else {
+          showError(result.message || 'فشل في حفظ المعلومات');
+        }
+      } catch (error) {
+        console.error('خطأ:', error);
+        showError('حدث خطأ أثناء حفظ المعلومات');
+      }
+    });
+
+    // تغيير كلمة المرور
+    document.getElementById('password-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const currentPassword = document.getElementById('current-password').value;
+      const newPassword = document.getElementById('new-password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+
+      if (newPassword.length < 8) {
+        showError('كلمة المرور الجديدة يجب أن تحتوي على 8 أحرف على الأقل');
+        return;
+      }
+
+      if (newPassword !== confirmPassword) {
+        showError('كلمة المرور الجديدة وتأكيدها غير متطابقتين');
+        return;
+      }
+
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      if (!currentUser) return;
+
+      try {
+        const response = await fetch('/change-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: currentUser.id,
+            currentPassword: currentPassword,
+            newPassword: newPassword
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          showSuccess('تم تغيير كلمة المرور بنجاح');
+          document.getElementById('password-form').reset();
+        } else {
+          showError(result.message || 'فشل في تغيير كلمة المرور');
+        }
+      } catch (error) {
+        console.error('خطأ:', error);
+        showError('حدث خطأ أثناء تغيير كلمة المرور');
+      }
+    });
+
+    // حفظ إعدادات الإشعارات
+    document.getElementById('notifications-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      if (!currentUser) return;
+
+      const notifications = {
+        email: document.getElementById('email-notifications').checked,
+        analysis: document.getElementById('analysis-notifications').checked,
+        tips: document.getElementById('tips-notifications').checked
+      };
+
+      try {
+        const response = await fetch('/update-notifications', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: currentUser.id,
+            notifications: notifications
+          })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          // تحديث البيانات في localStorage
+          const updatedUser = { ...currentUser, notifications: notifications };
+          localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+          
+          showSuccess('تم حفظ إعدادات الإشعارات بنجاح');
+        } else {
+          showError(result.message || 'فشل في حفظ إعدادات الإشعارات');
+        }
+      } catch (error) {
+        console.error('خطأ:', error);
+        showError('حدث خطأ أثناء حفظ إعدادات الإشعارات');
+      }
+    });
+
+    // تأكيد حذف الحساب
+    function confirmDeleteAccount() {
+      const confirmed = confirm('هل أنت متأكد من رغبتك في حذف حسابك نهائياً؟ سيتم حذف جميع بياناتك ومشاريعك ولا يمكن استرجاعها.');
+      
+      if (confirmed) {
+        const doubleConfirmed = confirm('هذا تأكيد أخير. هل تريد فعلاً حذف حسابك نهائياً؟');
+        
+        if (doubleConfirmed) {
+          deleteAccount();
+        }
+      }
+    }
+
+    // حذف الحساب
+    async function deleteAccount() {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      if (!currentUser) return;
+
+      try {
+        const response = await fetch('/delete-account', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: currentUser.id })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          localStorage.removeItem('currentUser');
+          localStorage.removeItem('isLoggedIn');
+          alert('تم حذف حسابك بنجاح');
+          window.location.href = 'index.html';
+        } else {
+          showError(result.message || 'فشل في حذف الحساب');
+        }
+      } catch (error) {
+        console.error('خطأ:', error);
+        showError('حدث خطأ أثناء حذف الحساب');
+      }
+    }
+
+    // عرض رسالة نجاح
+    function showSuccess(message) {
+      document.getElementById('success-text').textContent = message;
+      document.getElementById('success-message').classList.remove('hidden');
+      document.getElementById('error-message').classList.add('hidden');
+      
+      setTimeout(() => {
+        document.getElementById('success-message').classList.add('hidden');
+      }, 5000);
+    }
+
+    // عرض رسالة خطأ
+    function showError(message) {
+      document.getElementById('error-text').textContent = message;
+      document.getElementById('error-message').classList.remove('hidden');
+      document.getElementById('success-message').classList.add('hidden');
+      
+      setTimeout(() => {
+        document.getElementById('error-message').classList.add('hidden');
+      }, 5000);
+    }
+  </script>
+
+</body>
+</html>

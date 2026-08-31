@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>تحليل البيانات - Rased AI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.3/index.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@2.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    body { font-family: 'Cairo', sans-serif; background-color: #f9fafb; }
+    .chart-container { width: 100%; height: 400px; margin: 20px 0; }
+  </style>
+</head>
+<body class="text-gray-800">
+
+  <!-- رأس الصفحة -->
+  <header class="bg-indigo-600 text-white py-4 shadow-md">
+    <div class="container mx-auto flex justify-between items-center px-4">
+      <h1 class="text-xl font-bold">📊 تحليل البيانات المتقدم</h1>
+      <div class="space-x-2">
+        <a href="upload.html" class="bg-white text-indigo-600 px-4 py-2 rounded hover:bg-gray-200 text-sm">رفع ملف جديد</a>
+        <a href="dashboard.html" class="bg-white text-indigo-600 px-4 py-2 rounded hover:bg-gray-200 text-sm">العودة للوحة التحكم</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- محتوى التحليل -->
+  <main class="container mx-auto px-4 py-8">
+    <div class="bg-white rounded-lg shadow-md p-6">
+
+      <!-- ملخص التحليل -->
+      <div id="analysis-summary" class="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg">
+        <h2 class="text-2xl font-bold mb-4 text-indigo-800">📋 ملخص التحليل</h2>
+        <div id="summary-content" class="text-gray-700">
+          جاري تحميل البيانات...
+        </div>
+      </div>
+
+      <!-- الرسوم البيانية -->
+      <div id="charts-section" class="mb-8">
+        <h2 class="text-2xl font-bold mb-6 text-gray-800">📈 الرسوم البيانية</h2>
+        <div id="charts-container" class="space-y-8">
+          <!-- ستتم إضافة الرسوم البيانية هنا -->
+        </div>
+      </div>
+
+      <!-- معلومات الشركة المستخرجة -->
+      <div id="company-info-section" class="mb-8 bg-blue-50 p-6 rounded-lg">
+        <h2 class="text-2xl font-bold mb-4 text-blue-800">🏢 معلومات الشركة المستخرجة</h2>
+        <div id="company-info-content" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- ستتم إضافة معلومات الشركة هنا -->
+        </div>
+      </div>
+
+      <!-- الملخص المالي -->
+      <div id="financial-summary-section" class="mb-8 bg-yellow-50 p-6 rounded-lg">
+        <h2 class="text-2xl font-bold mb-4 text-yellow-800">💰 الملخص المالي</h2>
+        <div id="financial-summary-content" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- ستتم إضافة الملخص المالي هنا -->
+        </div>
+      </div>
+
+      <!-- التوصيات الذكية -->
+      <div id="recommendations-section" class="mb-8 bg-green-50 p-6 rounded-lg">
+        <h2 class="text-2xl font-bold mb-4 text-green-800">🤖 التوصيات الذكية بالذكاء الاصطناعي</h2>
+        <div id="recommendations-content">
+          <!-- ستتم إضافة التوصيات هنا -->
+        </div>
+      </div>
+      
+      <!-- Language selection dropdown -->
+      <div class="mb-4">
+        <label for="language-selector" class="block text-gray-700 text-sm font-bold mb-2">Select Language:</label>
+        <select id="language-selector" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+          <option value="arabic">Arabic</option>
+          <option value="english">English</option>
+        </select>
+      </div>
+
+      <!-- إحصائيات مفصلة -->
+      <div id="detailed-stats" class="bg-gray-50 p-6 rounded-lg">
+        <h2 class="text-2xl font-bold mb-4 text-gray-800">📊 إحصائيات مفصلة</h2>
+        <div id="stats-content" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- ستتم إضافة الإحصائيات هنا -->
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    // تحميل البيانات المحفوظة
+    const excelData = JSON.parse(localStorage.getItem('excelData')) || [];
+    const fileType = localStorage.getItem('fileType') || 'general';
+    const analysisResults = JSON.parse(localStorage.getItem('analysisResults')) || {};
+
+    // أسماء أنواع الملفات
+    const typeNames = {
+      'project_info': 'معلومات المؤسسة',
+      'sales': 'المبيعات',
+      'purchases': 'المشتريات',
+      'expenses': 'المصاريف',
+      'employees': 'الموظفين',
+      'budget': 'الميزانية',
+      'marketing': 'التسويق',
+      'tax': 'الضرائب',
+      'kpi': 'مؤشرات الأداء',
+      'general': 'عام'
+    };
+
+    // تحميل التحليل عند تحميل الصفحة
+    document.addEventListener('DOMContentLoaded', function() {
+      if (excelData.length === 0) {
+        document.getElementById('summary-content').innerHTML = `
+          <div class="text-center text-red-600">
+            <i class="fas fa-exclamation-triangle text-4xl mb-4"></i>
+            <p class="text-lg">لا توجد بيانات للتحليل</p>
+            <p class="text-sm mt-2">يرجى رفع ملف Excel أولاً</p>
+            <a href="upload.html" class="inline-block mt-4 bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700">رفع ملف</a>
+          </div>
+        `;
+        return;
+      }
+
+      loadAnalysisSummary();
+      generateCharts();
+      generateRecommendations();
+      generateDetailedStats();
+    });
+
+    function loadAnalysisSummary() {
+      const summaryContent = document.getElementById('summary-content');
+      const lastAnalysisDate = localStorage.getItem('lastAnalysisDate');
+
+      summaryContent.innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div class="text-center">
+            <div class="text-3xl font-bold text-indigo-600 mb-2">${typeNames[fileType]}</div>
+            <div class="text-sm text-gray-600">نوع البيانات</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl font-bold text-blue-600 mb-2">${excelData.length}</div>
+            <div class="text-sm text-gray-600">عدد السجلات</div>
+          </div>
+          <div class="text-center">
+            <div class="text-3xl font-bold text-green-600 mb-2">${Object.keys(excelData[0] || {}).length}</div>
+            <div class="text-sm text-gray-600">عدد الحقول</div>
+          </div>
+          <div class="text-center">
+            <div class="text-sm font-bold text-purple-600 mb-2">${lastAnalysisDate ? new Date(lastAnalysisDate).toLocaleString('ar-SA') : 'غير محدد'}</div>
+            <div class="text-sm text-gray-600">تاريخ التحليل</div>
+          </div>
+        </div>
+      `;
+
+      // عرض معلومات الشركة
+      loadCompanyInfo();
+
+      // عرض الملخص المالي
+      loadFinancialSummary();
+    }
+
+    function loadCompanyInfo() {
+      const companyInfoContent = document.getElementById('company-info-content');
+      const analysisResults = JSON.parse(localStorage.getItem('analysisResults')) || {};
+      const companyInfo = analysisResults.companyInfo || {};
+
+      if (Object.keys(companyInfo).length === 0) {
+        companyInfoContent.innerHTML = '<p class="text-gray-500 col-span-full text-center">لم يتم العثور على معلومات الشركة في الملف</p>';
+        return;
+      }
+
+      companyInfoContent.innerHTML = `
+        <div class="bg-white p-4 rounded-lg shadow-sm">
+          <h4 class="font-semibold text-blue-600 mb-2">اسم الشركة</h4>
+          <p class="text-gray-800">${companyInfo.name || 'غير محدد'}</p>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow-sm">
+          <h4 class="font-semibold text-blue-600 mb-2">الصناعة</h4>
+          <p class="text-gray-800">${companyInfo.industry || 'غير محدد'}</p>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow-sm">
+          <h4 class="font-semibold text-blue-600 mb-2">الموقع</h4>
+          <p class="text-gray-800">${companyInfo.location || 'غير محدد'}</p>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow-sm">
+          <h4 class="font-semibold text-blue-600 mb-2">عدد الموظفين</h4>
+          <p class="text-gray-800">${companyInfo.employees || 0}</p>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow-sm">
+          <h4 class="font-semibold text-blue-600 mb-2">الإيرادات</h4>
+          <p class="text-gray-800">${(companyInfo.revenue || 0).toLocaleString()} دج</p>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow-sm">
+          <h4 class="font-semibold text-blue-600 mb-2">المصاريف</h4>
+          <p class="text-gray-800">${(companyInfo.expenses || 0).toLocaleString()} دج</p>
+        </div>
+      `;
+    }
+
+    function loadFinancialSummary() {
+      const financialSummaryContent = document.getElementById('financial-summary-content');
+      const analysisResults = JSON.parse(localStorage.getItem('analysisResults')) || {};
+      const financialSummary = analysisResults.financialSummary || {};
+
+      financialSummaryContent.innerHTML = `
+        <div class="bg-white p-4 rounded-lg shadow-sm text-center">
+          <div class="text-2xl font-bold text-green-600 mb-2">${(financialSummary.totalRevenue || 0).toLocaleString()}</div>
+          <div class="text-sm text-gray-600">إجمالي الإيرادات</div>
+          <div class="text-xs text-gray-500">دج</div>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow-sm text-center">
+          <div class="text-2xl font-bold text-red-600 mb-2">${(financialSummary.totalExpenses || 0).toLocaleString()}</div>
+          <div class="text-sm text-gray-600">إجمالي المصاريف</div>
+          <div class="text-xs text-gray-500">دج</div>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow-sm text-center">
+          <div class="text-2xl font-bold text-blue-600 mb-2">${(financialSummary.netProfit || 0).toLocaleString()}</div>
+          <div class="text-sm text-gray-600">صافي الربح</div>
+          <div class="text-xs text-gray-500">دج</div>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow-sm text-center">
+          <div class="text-2xl font-bold text-purple-600 mb-2">${(financialSummary.profitMargin || 0).toFixed(1)}%</div>
+          <div class="text-sm text-gray-600">هامش الربح</div>
+          <div class="text-xs text-gray-500">نسبة مئوية</div>
+        </div>
+      `;
+    }
+
+    function generateCharts() {
+      const chartsContainer = document.getElementById('charts-container');
+
+      switch(fileType) {
+        case 'sales':
+          generateSalesCharts();
+          break;
+        case 'expenses':
+          generateExpensesCharts();
+          break;
+        case 'employees':
+          generateEmployeeCharts();
+          break;
+        case 'budget':
+          generateBudgetCharts();
+          break;
+        case 'marketing':
+          generateMarketingCharts();
+          break;
+        case 'kpi':
+          generateKPICharts();
+          break;
+        default:
+          generateGeneralCharts();
+      }
+    }
+
+    function generateSalesCharts() {
+      const chartsContainer = document.getElementById('charts-container');
+
+      // رسم بياني للمبيعات الشهرية
+      const monthlyChart = createChartContainer('المبيعات الشهرية', 'monthly-sales-chart');
+      chartsContainer.appendChild(monthlyChart);
+
+      // رسم دائري للمنتجات
+      const productChart = createChartContainer('توزيع المبيعات حسب المنتج', 'product-distribution-chart');
+      chartsContainer.appendChild(productChart);
+
+      // تنفيذ الرسوم البيانية
+      setTimeout(() => {
+        createMonthlySalesChart();
+        createProductDistributionChart();
+      }, 100);
+    }
+
+    function generateExpensesCharts() {
+      const chartsContainer = document.getElementById('charts-container');
+
+      const expensesChart = createChartContainer('توزيع المصاريف', 'expenses-distribution-chart');
+      chartsContainer.appendChild(expensesChart);
+
+      const trendChart = createChartContainer('اتجاه المصاريف', 'expenses-trend-chart');
+      chartsContainer.appendChild(trendChart);
+
+      setTimeout(() => {
+        createExpensesDistributionChart();
+        createExpensesTrendChart();
+      }, 100);
+    }
+
+    function generateEmployeeCharts() {
+      const chartsContainer = document.getElementById('charts-container');
+
+      const deptChart = createChartContainer('توزيع الموظفين حسب القسم', 'department-chart');
+      chartsContainer.appendChild(deptChart);
+
+      const salaryChart = createChartContainer('توزيع الرواتب', 'salary-distribution-chart');
+      chartsContainer.appendChild(salaryChart);
+
+      setTimeout(() => {
+        createDepartmentChart();
+        createSalaryDistributionChart();
+      }, 100);
+    }
+
+    function createChartContainer(title, id) {
+      const container = document.createElement('div');
+      container.className = 'bg-white p-6 rounded-lg shadow-md';
+      container.innerHTML = `
+        <h3 class="text-lg font-bold mb-4 text-gray-800">${title}</h3>
+        <div class="chart-container">
+          <canvas id="${id}"></canvas>
+        </div>
+      `;
+      return container;
+    }
+
+    function createMonthlySalesChart() {
+      const ctx = document.getElementById('monthly-sales-chart').getContext('2d');
+
+      // تجميع البيانات حسب الشهر
+      const monthlyData = {};
+      const headers = Object.keys(excelData[0] || {});
+      const dateCol = headers.find(h => h.toLowerCase().includes('date') || h.includes('تاريخ'));
+      const amountCol = headers.find(h => h.toLowerCase().includes('amount') || h.includes('مبلغ') || h.includes('قيمة'));
+
+      if (dateCol && amountCol) {
+        excelData.forEach(row => {
+          const date = new Date(row[dateCol]);
+          const month = date.toLocaleString('ar-SA', { month: 'long', year: 'numeric' });
+          const amount = parseFloat(row[amountCol]) || 0;
+          monthlyData[month] = (monthlyData[month] || 0) + amount;
+        });
+      }
+
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: Object.keys(monthlyData),
+          datasets: [{
+            label: 'المبيعات الشهرية',
+            data: Object.values(monthlyData),
+            borderColor: 'rgb(59, 130, 246)',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            tension: 0.4,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+
+    function createProductDistributionChart() {
+      const ctx = document.getElementById('product-distribution-chart').getContext('2d');
+
+      // تجميع البيانات حسب المنتج
+      const productData = {};
+      const headers = Object.keys(excelData[0] || {});
+      const productCol = headers.find(h => h.toLowerCase().includes('product') || h.includes('منتج') || h.includes('اسم'));
+      const amountCol = headers.find(h => h.toLowerCase().includes('amount') || h.includes('مبلغ') || h.includes('قيمة'));
+
+      if (productCol && amountCol) {
+        excelData.forEach(row => {
+          const product = row[productCol] || 'غير محدد';
+          const amount = parseFloat(row[amountCol]) || 0;
+          productData[product] = (productData[product] || 0) + amount;
+        });
+      }
+
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: Object.keys(productData),
+          datasets: [{
+            data: Object.values(productData),
+            backgroundColor: [
+              '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6',
+              '#06B6D4', '#84CC16', '#F97316', '#EC4899', '#6B7280'
+            ]
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }
+      });
+    }
+
+    function createExpensesDistributionChart() {
+      const ctx = document.getElementById('expenses-distribution-chart').getContext('2d');
+
+      // تجميع البيانات حسب نوع المصروف
+      const expenseData = {};
+      const headers = Object.keys(excelData[0] || {});
+      const categoryCol = headers.find(h => h.toLowerCase().includes('category') || h.includes('فئة') || h.includes('نوع'));
+      const amountCol = headers.find(h => h.toLowerCase().includes('amount') || h.includes('مبلغ') || h.includes('قيمة'));
+
+      if (categoryCol && amountCol) {
+        excelData.forEach(row => {
+          const category = row[categoryCol] || 'غير محدد';
+          const amount = parseFloat(row[amountCol]) || 0;
+          expenseData[category] = (expenseData[category] || 0) + amount;
+        });
+      }
+
+      new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: Object.keys(expenseData),
+          datasets: [{
+            data: Object.values(expenseData),
+            backgroundColor: [
+              '#EF4444', '#F97316', '#F59E0B', '#EAB308', '#84CC16',
+              '#22C55E', '#10B981', '#14B8A6', '#06B6D4', '#0EA5E9'
+            ]
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }
+      });
+    }
+
+    function createExpensesTrendChart() {
+      const ctx = document.getElementById('expenses-trend-chart').getContext('2d');
+
+      // تجميع البيانات حسب الشهر
+      const monthlyData = {};
+      const headers = Object.keys(excelData[0] || {});
+      const dateCol = headers.find(h => h.toLowerCase().includes('date') || h.includes('تاريخ'));
+      const amountCol = headers.find(h => h.toLowerCase().includes('amount') || h.includes('مبلغ') || h.includes('قيمة'));
+
+      if (dateCol && amountCol) {
+        excelData.forEach(row => {
+          const date = new Date(row[dateCol]);
+          const month = date.toLocaleString('ar-SA', { month: 'long', year: 'numeric' });
+          const amount = parseFloat(row[amountCol]) || 0;
+          monthlyData[month] = (monthlyData[month] || 0) + amount;
+        });
+      }
+
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: Object.keys(monthlyData),
+          datasets: [{
+            label: 'المصاريف الشهرية',
+            data: Object.values(monthlyData),
+            borderColor: 'rgb(239, 68, 68)',
+            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+            tension: 0.4,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+
+    function createDepartmentChart() {
+      const ctx = document.getElementById('department-chart').getContext('2d');
+
+      // تجميع البيانات حسب القسم
+      const deptData = {};
+      const headers = Object.keys(excelData[0] || {});
+      const deptCol = headers.find(h => h.toLowerCase().includes('department') || h.includes('قسم') || h.includes('إدارة'));
+
+      if (deptCol) {
+        excelData.forEach(row => {
+          const dept = row[deptCol] || 'غير محدد';
+          deptData[dept] = (deptData[dept] || 0) + 1;
+        });
+      }
+
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: Object.keys(deptData),
+          datasets: [{
+            label: 'عدد الموظفين',
+            data: Object.values(deptData),
+            backgroundColor: 'rgba(99, 102, 241, 0.8)',
+            borderColor: 'rgb(99, 102, 241)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+
+    function createSalaryDistributionChart() {
+      const ctx = document.getElementById('salary-distribution-chart').getContext('2d');
+
+      // تجميع البيانات حسب فئات الراتب
+      const salaryRanges = {
+        '0-30000': 0,
+        '30000-50000': 0,
+        '50000-80000': 0,
+        '80000+': 0
+      };
+
+      const headers = Object.keys(excelData[0] || {});
+      const salaryCol = headers.find(h => h.toLowerCase().includes('salary') || h.includes('راتب') || h.includes('أجر'));
+
+      if (salaryCol) {
+        excelData.forEach(row => {
+          const salary = parseFloat(row[salaryCol]) || 0;
+          if (salary < 30000) salaryRanges['0-30000']++;
+          else if (salary < 50000) salaryRanges['30000-50000']++;
+          else if (salary < 80000) salaryRanges['50000-80000']++;
+          else salaryRanges['80000+']++;
+        });
+      }
+
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['0-30000 دج', '30000-50000 دج', '50000-80000 دج', '80000+ دج'],
+          datasets: [{
+            data: Object.values(salaryRanges),
+            backgroundColor: ['#10B981', '#3B82F6', '#F59E0B', '#EF4444']
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }
+      });
+    }
+
+    function generateRecommendations() {
+      const recommendationsContent = document.getElementById('recommendations-content');
+      const analysisResults = JSON.parse(localStorage.getItem('analysisResults')) || {};
+
+      let recommendations = analysisResults.recommendations || [];
+
+      // إضافة توصيات إضافية حسب نوع الملف
+      switch(fileType) {
+        case 'sales':
+          recommendations = [...recommendations, ...generateSalesRecommendations()];
+          break;
+        case 'expenses':
+          recommendations = [...recommendations, ...generateExpensesRecommendations()];
+          break;
+        case 'employees':
+          recommendations = [...recommendations, ...generateEmployeeRecommendations()];
+          break;
+        default:
+          recommendations = [...recommendations, ...generateGeneralRecommendations()];
+      }
+
+      if (recommendations.length === 0) {
+        recommendationsContent.innerHTML = '<p class="text-gray-500 text-center">لا توجد توصيات متاحة حالياً</p>';
+        return;
+      }
+
+      recommendationsContent.innerHTML = recommendations.map(rec => {
+        const typeColors = {
+          'success': { bg: 'bg-green-50', border: 'border-green-200', icon: 'text-green-600' },
+          'warning': { bg: 'bg-yellow-50', border: 'border-yellow-200', icon: 'text-yellow-600' },
+          'error': { bg: 'bg-red-50', border: 'border-red-200', icon: 'text-red-600' },
+          'info': { bg: 'bg-blue-50', border: 'border-blue-200', icon: 'text-blue-600' }
+        };
+
+        const colors = typeColors[rec.type] || typeColors['info'];
+        const priorityBadge = rec.priority ? `<span class="inline-block px-2 py-1 text-xs rounded-full ${rec.priority === 'عالية' ? 'bg-red-100 text-red-800' : rec.priority === 'متوسطة' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}">${rec.priority}</span>` : '';
+
+        return `
+          <div class="flex items-start p-4 mb-3 rounded-lg border ${colors.bg} ${colors.border}">
+            <i class="fas fa-lightbulb text-2xl mr-3 mt-1 ${colors.icon}"></i>
+            <div class="flex-1">
+              <div class="flex items-center justify-between mb-2">
+                <h4 class="font-semibold">${rec.title}</h4>
+                ${priorityBadge}
+              </div>
+              <p class="text-sm mb-2">${rec.description}</p>
+              ${rec.category ? `<span class="inline-block px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded">${rec.category}</span>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // إضافة زر لطلب توصيات إضافية من الذكاء الاصطناعي
+      recommendationsContent.innerHTML += `
+        <div class="text-center mt-6">
+          <button onclick="requestAIRecommendations()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg transition">
+            <i class="fas fa-robot mr-2"></i>طلب توصيات إضافية من الذكاء الاصطناعي
+          </button>
+        </div>
+      `;
+    }
+
+    async function requestAIRecommendations() {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      if (!currentUser) {
+        alert('يجب تسجيل الدخول أولاً');
+        return;
+      }
+
+      const analysisResults = JSON.parse(localStorage.getItem('analysisResults')) || {};
+      const prompt = `بناءً على هذه البيانات من ملف ${analysisResults.fileName || 'غير معروف'}:
+      - نوع الملف: ${typeNames[fileType] || 'غير محدد'}
+      - عدد السجلات: ${excelData.length || 0}
+      - الإيرادات: ${analysisResults.financialSummary?.totalRevenue || 0} دج
+      - المصاريف: ${analysisResults.financialSummary?.totalExpenses || 0} دج
+      - هامش الربح: ${analysisResults.financialSummary?.profitMargin || 0}%
+
+      قدم لي 3 توصيات عملية ومحددة لتحسين الأداء المالي لهذه الشركة في السوق الجزائري.`;
+
+      // إظهار مؤشر التحميل
+      const loadingDiv = document.createElement('div');
+      loadingDiv.id = 'ai-loading';
+      loadingDiv.className = 'mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg text-center';
+      loadingDiv.innerHTML = `
+        <div class="flex items-center justify-center">
+          <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mr-3"></div>
+          <span class="text-blue-800">جاري الحصول على توصيات من الذكاء الاصطناعي...</span>
+        </div>
+      `;
+      document.getElementById('recommendations-content').appendChild(loadingDiv);
+
+      try {
+        const response = await fetch(`${window.location.protocol}//${window.location.hostname}:5000/chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            message: prompt,
+            userId: currentUser.id,
+            language: document.getElementById('language-selector').value // Send selected language
+          })
+        });
+
+        const data = await response.json();
+
+        // إزالة مؤشر التحميل
+        document.getElementById('ai-loading')?.remove();
+
+        if (data.requiresUpgrade) {
+          alert(data.reply + '\n\n🔄 للترقية للخطة المدفوعة، تواصل معنا على واتساب');
+          return;
+        }
+
+        // إضافة التوصيات الجديدة
+        const selectedLanguage = document.getElementById('language-selector').value;
+        const aiRecommendationDiv = document.createElement('div');
+        aiRecommendationDiv.className = 'mt-4 p-4 bg-indigo-50 border border-indigo-200 rounded-lg';
+        aiRecommendationDiv.innerHTML = `
+          <h4 class="font-bold text-indigo-800 mb-3">
+            <i class="fas fa-robot mr-2"></i>${selectedLanguage === 'english' ? 'Additional AI Recommendations' : 'توصيات إضافية من الذكاء الاصطناعي'}
+          </h4>
+          <div class="text-sm leading-relaxed whitespace-pre-line ${selectedLanguage === 'english' ? 'text-left' : 'text-right'}" dir="${selectedLanguage === 'english' ? 'ltr' : 'rtl'}">${data.reply}</div>
+        `;
+        document.getElementById('recommendations-content').appendChild(aiRecommendationDiv);
+
+      } catch (error) {
+        console.error('خطأ في الحصول على التوصيات:', error);
+        ```
+        // إزالة مؤشر التحميل
+        document.getElementById('ai-loading')?.remove();
+
+        alert('❌ حدث خطأ في الحصول على التوصيات. تأكد من الاتصال بالإنترنت.');
+      }
+    }
+
+    // دالة مساعدة لتنسيق الأرقام
+    function formatNumber(num) {
+      return new Intl.NumberFormat('ar-DZ').format(num);
+    }
+
+    // دالة لحفظ التحليل في ملف المستخدم
+    async function saveAnalysisToProject() {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      if (!currentUser) {
+        alert('يجب تسجيل الدخول أولاً');
+        return;
+      }
+
+      const analysisResults = JSON.parse(localStorage.getItem('analysisResults'));
+      if (!analysisResults) {
+        alert('لا توجد نتائج تحليل لحفظها');
+        return;
+      }
+
+      try {
+        const response = await fetch(`${window.location.protocol}//${window.location.hostname}:5000/save-analysis`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: currentUser.id,
+            analysis: analysisResults
+          })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          alert('✅ تم حفظ التحليل بنجاح');
+        } else {
+          alert('❌ فشل في حفظ التحليل');
+        }
+      } catch (error) {
+        console.error('خطأ في حفظ التحليل:', error);
+        alert('❌ حدث خطأ في حفظ التحليل');
+      }
+    }
+
+    function generateSalesRecommendations() {
+      const headers = Object.keys(excelData[0] || {});
+      const amountCol = headers.find(h => h.toLowerCase().includes('amount') || h.includes('مبلغ') || h.includes('قيمة'));
+
+      const totalSales = excelData.reduce((sum, row) => sum + (parseFloat(row[amountCol]) || 0), 0);
+      const avgSale = totalSales / excelData.length;
+
+      const recommendations = [
+        {
+          title: 'تحسين الأداء',
+          description: `متوسط المبيعات الحالي ${avgSale.toLocaleString()} دج. يمكن زيادته بتحسين استراتيجيات البيع.`,
+          icon: 'fas fa-chart-up',
+          bgClass: 'bg-blue-50',
+          borderClass: 'border-blue-200'
+        }
+      ];
+
+      if (avgSale < 10000) {
+        recommendations.push({
+          title: 'زيادة قيمة المبيعات',
+          description: 'المبيعات منخفضة. فكر في تنويع المنتجات أو تحسين التسعير.',
+          icon: 'fas fa-exclamation-triangle',
+          bgClass: 'bg-yellow-50',
+          borderClass: 'border-yellow-200'
+        });
+      }
+
+      return recommendations;
+    }
+
+    function generateExpensesRecommendations() {
+      return [
+        {
+          title: 'مراقبة المصاريف',
+          description: 'تتبع المصاريف بانتظام لتجنب الإفراط في الإنفاق.',
+          icon: 'fas fa-eye',
+          bgClass: 'bg-orange-50',
+          borderClass: 'border-orange-200'
+        },
+        {
+          title: 'تحسين الكفاءة',
+          description: 'ابحث عن طرق لتقليل المصاريف دون التأثير على الجودة.',
+          icon: 'fas fa-cogs',
+          bgClass: 'bg-green-50',
+          borderClass: 'border-green-200'
+        }
+      ];
+    }
+
+    function generateEmployeeRecommendations() {
+      return [
+        {
+          title: 'تطوير الموظفين',
+          description: 'استثمر في برامج التدريب والتطوير لتحسين الأداء.',
+          icon: 'fas fa-graduation-cap',
+          bgClass: 'bg-purple-50',
+          borderClass: 'border-purple-200'
+        },
+        {
+          title: 'توازن الأقسام',
+          description: 'تأكد من التوزيع المتوازن للموظفين بين الأقسام.',
+          icon: 'fas fa-balance-scale',
+          bgClass: 'bg-indigo-50',
+          borderClass: 'border-indigo-200'
+        }
+      ];
+    }
+
+    function generateDetailedStats() {
+      const statsContent = document.getElementById('stats-content');
+
+      const headers = Object.keys(excelData[0] || {});
+      const numericCols = headers.filter(h => {
+        return excelData.some(row => !isNaN(parseFloat(row[h])));
+      });
+
+      const stats = [];
+
+      numericCols.forEach(col => {
+        const values = excelData.map(row => parseFloat(row[col]) || 0);
+        const sum = values.reduce((a, b) => a + b, 0);
+        const avg = sum / values.length;
+        const max = Math.max(...values);
+        const min = Math.min(...values);
+
+        stats.push({
+          title: col,
+          value: avg.toLocaleString(),
+          label: 'المتوسط',
+          color: 'text-blue-600'
+        });
+      });
+
+      // إضافة إحصائيات إضافية
+      stats.push({
+        title: 'إجمالي السجلات',
+        value: excelData.length.toLocaleString(),
+        label: 'سجل',
+        color: 'text-green-600'
+      });
+
+      statsContent.innerHTML = stats.map(stat => `
+        <div class="bg-white p-4 rounded-lg shadow-sm text-center">
+          <div class="text-2xl font-bold ${stat.color} mb-2">${stat.value}</div>
+          <div class="text-sm text-gray-600">${stat.title}</div>
+          <div class="text-xs text-gray-500">${stat.label}</div>
+        </div>
+      `).join('');
+    }
+
+    function generateGeneralRecommendations() {
+      return [
+        {
+          title: 'تحليل البيانات',
+          description: 'تم تحليل البيانات بنجاح. يمكنك الآن اتخاذ قرارات مدروسة.',
+          icon: 'fas fa-chart-bar',
+          bgClass: 'bg-blue-50',
+          borderClass: 'border-blue-200'
+        }
+      ];
+    }
+
+    function generateGeneralCharts() {
+      const chartsContainer = document.getElementById('charts-container');
+
+      const generalChart = createChartContainer('تحليل البيانات العام', 'general-chart');
+      chartsContainer.appendChild(generalChart);
+
+      setTimeout(() => {
+        createGeneralChart();
+      }, 100);
+    }
+
+    function createGeneralChart() {
+      const ctx = document.getElementById('general-chart').getContext('2d');
+
+      const headers = Object.keys(excelData[0] || {});
+      const numericCols = headers.filter(h => {
+        return excelData.some(row => !isNaN(parseFloat(row[h])));
+      });
+
+      if (numericCols.length > 0) {
+        const firstCol = numericCols[0];
+        const values = excelData.map(row => parseFloat(row[firstCol]) || 0);
+
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: excelData.map((_, index) => `السجل ${index + 1}`),
+            datasets: [{
+              label: firstCol,
+              data: values,
+              backgroundColor: 'rgba(59, 130, 246, 0.8)',
+              borderColor: 'rgb(59, 130, 246)',
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            }
+          }
+        });
+      }
+    }
+  </script>
+</body>
+</html>

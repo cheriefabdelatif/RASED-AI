@@ -1,0 +1,215 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>طلب عرض توضيحي - Rased AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    body { font-family: 'Cairo', sans-serif; }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+  <!-- رأس الصفحة -->
+  <header class="bg-indigo-600 text-white py-4 shadow-md">
+    <div class="container mx-auto flex justify-between items-center px-4">
+      <h1 class="text-xl font-bold">📺 طلب عرض توضيحي - Rased AI</h1>
+      <a href="index.html" class="bg-white text-indigo-600 px-4 py-2 rounded hover:bg-gray-200 text-sm">
+        العودة للصفحة الرئيسية
+      </a>
+    </div>
+  </header>
+
+  <!-- محتوى الصفحة -->
+  <main class="container mx-auto px-4 py-8">
+    <div class="max-w-2xl mx-auto">
+      
+      <!-- مقدمة -->
+      <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+        <div class="text-center mb-6">
+          <i class="fas fa-presentation text-4xl text-indigo-600 mb-4"></i>
+          <h2 class="text-2xl font-bold text-gray-800 mb-2">احصل على عرض توضيحي مخصص</h2>
+          <p class="text-gray-600">
+            سيقوم فريقنا بإعداد عرض توضيحي مخصص لمشروعك وتوضيح كيف يمكن لـ Rased AI مساعدتك في تحقيق أهدافك
+          </p>
+        </div>
+
+        <!-- مميزات العرض التوضيحي -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div class="flex items-start">
+            <i class="fas fa-check-circle text-green-500 text-xl mt-1 mr-3"></i>
+            <div>
+              <h3 class="font-semibold mb-1">تحليل مخصص لمشروعك</h3>
+              <p class="text-sm text-gray-600">نحلل بياناتك ونقدم توصيات محددة</p>
+            </div>
+          </div>
+          <div class="flex items-start">
+            <i class="fas fa-check-circle text-green-500 text-xl mt-1 mr-3"></i>
+            <div>
+              <h3 class="font-semibold mb-1">جلسة استشارية مجانية</h3>
+              <p class="text-sm text-gray-600">30 دقيقة من الاستشارة المالية المجانية</p>
+            </div>
+          </div>
+          <div class="flex items-start">
+            <i class="fas fa-check-circle text-green-500 text-xl mt-1 mr-3"></i>
+            <div>
+              <h3 class="font-semibold mb-1">تدريب على استخدام النظام</h3>
+              <p class="text-sm text-gray-600">شرح مفصل لجميع ميزات النظام</p>
+            </div>
+          </div>
+          <div class="flex items-start">
+            <i class="fas fa-check-circle text-green-500 text-xl mt-1 mr-3"></i>
+            <div>
+              <h3 class="font-semibold mb-1">خطة تطوير مقترحة</h3>
+              <p class="text-sm text-gray-600">استراتيجية واضحة لنمو مشروعك</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- نموذج طلب العرض -->
+        <form id="demo-request-form" class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-medium mb-1">الاسم الكامل *</label>
+              <input type="text" id="name" class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500" required>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">رقم الواتساب *</label>
+              <input type="tel" id="whatsapp" class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500" placeholder="+213XXXXXXXXX" required>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium mb-1">اسم الشركة أو المشروع</label>
+            <input type="text" id="company" class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium mb-1">نوع النشاط</label>
+            <select id="activity-type" class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500">
+              <option value="">اختر نوع النشاط</option>
+              <option value="تجارة">تجارة</option>
+              <option value="صناعة">صناعة</option>
+              <option value="خدمات">خدمات</option>
+              <option value="تكنولوجيا">تكنولوجيا</option>
+              <option value="زراعة">زراعة</option>
+              <option value="سياحة">سياحة</option>
+              <option value="تعليم">تعليم</option>
+              <option value="صحة">صحة</option>
+              <option value="أخرى">أخرى</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium mb-1">الوقت المفضل للاتصال</label>
+            <select id="preferred-time" class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500">
+              <option value="">اختر الوقت المفضل</option>
+              <option value="صباحاً (9-12)">صباحاً (9-12)</option>
+              <option value="ظهراً (12-15)">ظهراً (12-15)</option>
+              <option value="مساءً (15-18)">مساءً (15-18)</option>
+              <option value="ليلاً (18-21)">ليلاً (18-21)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium mb-1">ملاحظات إضافية</label>
+            <textarea id="notes" class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500" rows="4" placeholder="أخبرنا عن التحديات التي تواجهها أو الأهداف التي تريد تحقيقها..."></textarea>
+          </div>
+
+          <div class="bg-blue-50 p-4 rounded-lg">
+            <h4 class="font-semibold mb-2 text-blue-800">ما يحدث بعد إرسال الطلب:</h4>
+            <ol class="text-sm text-blue-700 space-y-1">
+              <li>1. سنتواصل معك خلال 24 ساعة عبر الواتساب</li>
+              <li>2. نحدد موعد مناسب للعرض التوضيحي</li>
+              <li>3. نرسل لك رابط الاجتماع أو نتفق على اللقاء المباشر</li>
+              <li>4. نقدم لك عرضاً توضيحياً مخصصاً لمشروعك</li>
+            </ol>
+          </div>
+
+          <div class="text-center">
+            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-8 rounded-lg transition font-semibold">
+              <i class="fas fa-paper-plane mr-2"></i>
+              إرسال طلب العرض التوضيحي
+            </button>
+          </div>
+        </form>
+
+      </div>
+
+      <!-- معلومات الاتصال -->
+      <div class="bg-gray-50 rounded-lg p-6 text-center">
+        <h3 class="font-semibold mb-3">تواصل معنا مباشرة</h3>
+        <div class="flex flex-col md:flex-row justify-center items-center space-y-2 md:space-y-0 md:space-x-6">
+          <div class="flex items-center">
+            <i class="fab fa-whatsapp text-green-500 text-xl mr-2"></i>
+            <span class="text-sm">واتساب: +213123456789</span>
+          </div>
+          <div class="flex items-center">
+            <i class="fas fa-envelope text-blue-500 text-xl mr-2"></i>
+            <span class="text-sm">البريد: info@rasedai.dz</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    document.getElementById('demo-request-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const formData = {
+        name: document.getElementById('name').value,
+        whatsapp: document.getElementById('whatsapp').value,
+        company: document.getElementById('company').value,
+        activityType: document.getElementById('activity-type').value,
+        preferredTime: document.getElementById('preferred-time').value,
+        notes: document.getElementById('notes').value
+      };
+
+      if (!formData.name || !formData.whatsapp) {
+        alert('⚠️ الرجاء ملء الحقول المطلوبة');
+        return;
+      }
+
+      try {
+        const response = await fetch('/demo-request', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          alert('✅ تم إرسال طلبك بنجاح! سنتواصل معك قريباً عبر الواتساب.');
+          document.getElementById('demo-request-form').reset();
+          setTimeout(() => {
+            window.location.href = 'index.html';
+          }, 2000);
+        } else {
+          alert(`❌ ${data.message}`);
+        }
+      } catch (error) {
+        console.error('خطأ في إرسال الطلب:', error);
+        alert('❌ حدث خطأ أثناء إرسال الطلب. حاول مرة أخرى.');
+      }
+    });
+
+    // تحسين تجربة المستخدم
+    document.getElementById('whatsapp').addEventListener('input', function() {
+      let value = this.value.replace(/\D/g, '');
+      if (value && !value.startsWith('213')) {
+        value = '213' + value;
+      }
+      this.value = value ? '+' + value : '';
+    });
+  </script>
+
+</body>
+</html>

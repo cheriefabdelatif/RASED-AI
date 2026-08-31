@@ -1,0 +1,53 @@
+[
+  {
+    "id": "1752235375044",
+    "name": "عبداللطيف",
+    "whatsapp": "+213665028481",
+    "company": "Gg",
+    "notes": "Gg",
+    "status": "pending",
+    "requestDate": "2025-07-11T12:02:55.045Z"
+  },
+  {
+    "id": "1752270698396",
+    "name": "لببللغ",
+    "whatsapp": "/62/92/96/9",
+    "company": "اتنامن",
+    "notes": "غفهعغ",
+    "status": "pending",
+    "requestDate": "2025-07-11T21:51:38.396Z"
+  },
+  {
+    "id": "1752342325102",
+    "name": "Ygfdd",
+    "whatsapp": "88888",
+    "company": "Gy",
+    "activityType": "",
+    "preferredTime": "",
+    "notes": "",
+    "status": "pending",
+    "requestDate": "2025-07-12T17:45:25.102Z"
+  },
+  {
+    "id": "1752343938554",
+    "name": "عبد اللطيف",
+    "whatsapp": "+213773466456",
+    "company": "شركة الافاق للتصدير",
+    "activityType": "",
+    "preferredTime": "",
+    "notes": "",
+    "status": "pending",
+    "requestDate": "2025-07-12T18:12:18.554Z"
+  },
+  {
+    "id": "1752344006592",
+    "name": "عبد اللطيف",
+    "whatsapp": "+213773466456",
+    "company": "شركة الافاق",
+    "activityType": "أخرى",
+    "preferredTime": "صباحاً (9-12)",
+    "notes": "",
+    "status": "pending",
+    "requestDate": "2025-07-12T18:13:26.592Z"
+  }
+]

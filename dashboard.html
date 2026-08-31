@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>لوحة التحكم - Rased AI</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script
+      src="https://kit.fontawesome.com/a076d05399.js"
+      crossorigin="anonymous"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+    />
+    <style>
+      body {
+        font-family: "Cairo", sans-serif;
+        background-color: #f9fafb;
+      }
+    </style>
+  </head>
+  <body class="text-gray-800">
+    <!-- رأس الصفحة -->
+    <header class="bg-indigo-600 text-white py-4 shadow-md">
+      <div class="container mx-auto flex justify-between items-center px-4">
+        <h1 class="text-xl font-bold">🏠 لوحة التحكم - Rased AI</h1>
+        <div class="flex items-center space-x-4">
+          <div class="relative">
+            <button onclick="toggleUserMenu()" class="flex items-center space-x-2 bg-indigo-700 hover:bg-indigo-800 px-3 py-2 rounded-lg transition">
+              <i class="fas fa-user-circle text-xl"></i>
+              <span id="user-name">المستخدم</span>
+              <i class="fas fa-chevron-down text-sm"></i>
+            </button>
+            <div id="user-menu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
+              <a href="#" onclick="showUserProfile()" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+                <i class="fas fa-user mr-2"></i>الملف الشخصي
+              </a>
+              <a href="settings.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">
+                <i class="fas fa-cog mr-2"></i>الإعدادات
+              </a>
+              <hr class="my-2">
+              <a href="#" onclick="logout()" class="block px-4 py-2 text-red-600 hover:bg-gray-100">
+                <i class="fas fa-sign-out-alt mr-2"></i>تسجيل الخروج
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- محتوى الصفحة -->
+    <main class="container mx-auto px-4 py-8">
+      <h2 class="text-xl font-semibold mb-4">مرحبًا بك 👋</h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <a
+          href="add-project.html"
+          class="bg-white shadow-md rounded-lg p-6 text-center hover:shadow-lg transition"
+        >
+          <i class="fas fa-plus-circle text-indigo-500 text-3xl mb-2"></i>
+          <h3 class="text-lg font-bold mb-1">إضافة مشروع</h3>
+          <p class="text-sm text-gray-600">أدخل بيانات مشروعك الجديد</p>
+        </a>
+
+        <a
+          href="upload.html"
+          class="bg-white shadow-md rounded-lg p-6 text-center hover:shadow-lg transition"
+        >
+          <i class="fas fa-file-upload text-indigo-500 text-3xl mb-2"></i>
+          <h3 class="text-lg font-bold mb-1">رفع ملف Excel</h3>
+          <p class="text-sm text-gray-600">استورد بيانات من جدول Excel</p>
+        </a>
+
+        <a
+          href="projects.html"
+          class="bg-white shadow-md rounded-lg p-6 text-center hover:shadow-lg transition"
+        >
+          <i class="fas fa-tasks text-indigo-500 text-3xl mb-2"></i>
+          <h3 class="text-lg font-bold mb-1">إدارة المشاريع</h3>
+          <p class="text-sm text-gray-600">عرض وتعديل المشاريع</p>
+        </a>
+
+        <a
+          href="analysis.html"
+          class="bg-white shadow-md rounded-lg p-6 text-center hover:shadow-lg transition"
+        >
+          <i class="fas fa-chart-line text-indigo-500 text-3xl mb-2"></i>
+          <h3 class="text-lg font-bold mb-1">تحليل المشروع</h3>
+          <p class="text-sm text-gray-600">عرض الإحصائيات والمؤشرات</p>
+        </a>
+
+        <a
+          href="recommendations.html"
+          class="bg-white shadow-md rounded-lg p-6 text-center hover:shadow-lg transition"
+        >
+          <i class="fas fa-lightbulb text-indigo-500 text-3xl mb-2"></i>
+          <h3 class="text-lg font-bold mb-1">توصيات ذكية</h3>
+          <p class="text-sm text-gray-600">نصائح مبنية على التحليل</p>
+        </a>
+
+        <a
+          href="chat.html"
+          class="bg-white shadow-md rounded-lg p-6 text-center hover:shadow-lg transition"
+        >
+          <i class="fas fa-robot text-indigo-500 text-3xl mb-2"></i>
+          <h3 class="text-lg font-bold mb-1">الدردشة مع الذكاء الاصطناعي</h3>
+          <p class="text-sm text-gray-600">اسأل Rased AI مباشرة</p>
+        </a>
+      </div>
+       <div id="projects-list" class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+       </div>
+    </main>
+
+    <!-- مودال الملف الشخصي -->
+    <div id="profile-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden" >
+      <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3 text-center">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">الملف الشخصي</h3>
+          <div class="px-7 py-3">
+            <p class="text-sm text-gray-500">
+              <div class="mb-2">
+                <span class="font-semibold">الاسم:</span>
+                <span id="profile-name"></span>
+              </div>
+              <div class="mb-2">
+                <span class="font-semibold">البريد الإلكتروني:</span>
+                <span id="profile-email"></span>
+              </div>
+              <div class="mb-2">
+                <span class="font-semibold">رقم المستخدم:</span>
+                <span id="profile-user-id"></span>
+              </div>
+              <div class="mb-2">
+                <span class="font-semibold">تاريخ التسجيل:</span>
+                <span id="profile-registration-date"></span>
+              </div>
+              <div class="mb-2">
+                <span class="font-semibold">الأيام منذ التسجيل:</span>
+                <span id="profile-registration-days"></span>
+              </div>
+            </p>
+          </div>
+          <h4 class="text-md leading-6 font-medium text-gray-900 mt-4">إحصائيات النشاط</h4>
+          <div id="activity-stats" class="px-7 py-3">
+            </div>
+
+            <h4 class="text-md leading-6 font-medium text-gray-900 mt-4">آخر المشاريع</h4>
+            <div id="recent-projects" class="px-7 py-3">
+            </div>
+
+          <div class="items-center px-4 py-3">
+            <button id="ok-button" class="px-4 py-2 bg-green-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-300" onclick="closeUserProfile()">
+              حسناً
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+    let currentUser;
+    let userProjects = [];
+
+    // دالة تحميل بيانات لوحة التحكم
+    function loadDashboardData() {
+      // تحميل إحصائيات المشاريع
+      updateProjectStats();
+      // تحديث الرسوم البيانية
+      if (typeof Chart !== 'undefined') {
+        createChartsIfDataExists();
+      }
+    }
+
+    // التحقق من تسجيل الدخول عند تحميل الصفحة
+    window.addEventListener('load', function() {
+        const isLoggedIn = localStorage.getItem("isLoggedIn");
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+        if (!isLoggedIn || !currentUser) {
+          alert("يجب تسجيل الدخول أولاً");
+          window.location.href = "index.html";
+          return;
+        }
+
+        // عرض اسم المستخدم في الصفحة
+        const userNameElement = document.querySelector("h1");
+        if (userNameElement && currentUser.name) {
+          userNameElement.textContent = `مرحباً ${currentUser.name} - لوحة التحكم Rased AI`;
+        }
+      });
+
+      function logout() {
+        localStorage.removeItem("isLoggedIn");
+        localStorage.removeItem("currentUser");
+        alert("تم تسجيل الخروج");
+        window.location.href = "index.html";
+      }
+
+      document.addEventListener('DOMContentLoaded', function() {
+      checkAuth();
+      loadUserInfo();
+
+      // إغلاق القائمة عند النقر خارجها
+      document.addEventListener('click', function(event) {
+        const userMenu = document.getElementById('user-menu');
+        const userButton = event.target.closest('button');
+        if (!userButton || !userButton.onclick || userButton.onclick.toString().indexOf('toggleUserMenu') === -1) {
+          userMenu.classList.add('hidden');
+        }
+      });
+    });
+
+    function loadUserInfo() {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      if (currentUser) {
+        document.getElementById('user-name').textContent = currentUser.name;
+      }
+    }
+
+    function loadDashboardData() {
+      loadUserInfo();
+      loadUserProjects();
+    }
+
+    function toggleUserMenu() {
+      const userMenu = document.getElementById('user-menu');
+      userMenu.classList.toggle('hidden');
+    }
+
+    function showUserProfile() {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      if (!currentUser) return;
+
+      document.getElementById('profile-name').textContent = currentUser.name;
+      document.getElementById('profile-email').textContent = currentUser.email;
+      document.getElementById('profile-user-id').textContent = currentUser.id;
+      document.getElementById('profile-registration-date').textContent = new Date(currentUser.registrationDate).toLocaleDateString('ar-SA');
+      document.getElementById('profile-modal').classList.remove('hidden');
+    }
+
+
+
+    function checkAuth() {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      if (!currentUser) {
+        window.location.href = 'index.html';
+        return false;
+      }
+      return true;
+    }
+
+    function createExpensesDistributionChart() {
+      // رسم بياني للمصاريف
+      console.log('إنشاء رسم بياني للمصاريف');
+    }
+
+    function closeUserProfile() {
+      document.getElementById('profile-modal').classList.add('hidden');
+    }
+
+    function editProfile() {
+      alert('ميزة تعديل الملف الشخصي ستكون متاحة قريباً');
+    }
+    </script>
+    <script>
+    // تحميل بيانات لوحة التحكم
+    window.addEventListener('load', function() {
+      checkAuth();
+      loadDashboardData();
+    });
+
+    // دالة تحميل بيانات لوحة التحكم
+    async function loadDashboardData() {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      if (!currentUser) return;
+
+      try {
+        // تحديث اسم المستخدم
+        document.getElementById('user-name').textContent = currentUser.name;
+
+        // تحميل المشاريع
+        const response = await fetch(`/projects/${currentUser.id}`);
+        const data = await response.json();
+
+        if (data.success) {
+          updateProjectsStats(data.projects);
+          displayRecentProjects(data.projects);
+        }
+      } catch (error) {
+        console.error('خطأ في تحميل البيانات:', error);
+      }
+    }
+
+    // تحديث إحصائيات المشاريع
+    function updateProjectsStats(projects) {
+      const totalProjects = projects.length;
+      const totalRevenue = projects.reduce((sum, p) => sum + (p.monthly_revenue || 0), 0);
+      const totalExpenses = projects.reduce((sum, p) => sum + (p.monthly_expenses || 0), 0);
+      const totalProfit = totalRevenue - totalExpenses;
+
+      document.getElementById('total-projects').textContent = totalProjects;
+      document.getElementById('total-revenue').textContent = formatNumber(totalRevenue) + ' دج';
+      document.getElementById('total-expenses').textContent = formatNumber(totalExpenses) + ' دج';
+      document.getElementById('total-profit').textContent = formatNumber(totalProfit) + ' دج';
+
+      // تغيير لون الربح حسب القيمة
+      const profitElement = document.getElementById('total-profit');
+      if (totalProfit >= 0) {
+        profitElement.className = 'text-2xl font-bold text-green-600';
+      } else {
+        profitElement.className = 'text-2xl font-bold text-red-600';
+      }
+    }
+
+    // عرض المشاريع الحديثة
+    function displayRecentProjects(projects) {
+      const recentProjectsList = document.getElementById('recent-projects-list');
+      if (!recentProjectsList) return;
+
+      recentProjectsList.innerHTML = '';
+
+      if (projects.length === 0) {
+        recentProjectsList.innerHTML = '<p class="text-gray-500 text-center py-4">لا توجد مشاريع مضافة بعد</p>';
+        return;
+      }
+
+      const recentProjects = projects.slice(-3).reverse();
+
+      recentProjects.forEach(project => {
+        const profit = (project.monthly_revenue || 0) - (project.monthly_expenses || 0);
+        const profitClass = profit >= 0 ? 'text-green-600' : 'text-red-600';
+
+        const projectDiv = document.createElement('div');
+        projectDiv.className = 'border rounded-lg p-4 hover:shadow-md transition';
+        projectDiv.innerHTML = `
+          <h3 class="font-semibold mb-2">${project.name || 'مشروع بدون اسم'}</h3>
+          <div class="text-sm text-gray-600 space-y-1">
+            <div>النشاط: ${project.activity_type || 'غير محدد'}</div>
+            <div>المنطقة: ${project.region || 'غير محدد'}</div>
+            <div class="${profitClass}">الربح الشهري: ${formatNumber(profit)} دج</div>
+          </div>
+        `;
+        recentProjectsList.appendChild(projectDiv);
+      });
+    }
+
+    function formatNumber(num) {
+      return new Intl.NumberFormat('ar-DZ').format(num);
+    }
+  </script>
+</body>
+</html>

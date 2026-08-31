@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>الدردشة مع Rased AI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <style>
+    body { font-family: 'Cairo', sans-serif; background-color: #f9fafb; }
+    #chat-container {
+      height: 400px;
+      overflow-y: auto;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 1rem;
+    }
+    .chat-message { margin-bottom: 1rem; }
+  </style>
+</head>
+<body class="text-gray-800">
+
+  <!-- رأس الصفحة -->
+  <header class="bg-indigo-600 text-white py-4 shadow-md">
+    <div class="container mx-auto flex justify-between items-center px-4">
+      <h1 class="text-xl font-bold">🤖 الدردشة مع Rased AI</h1>
+      <a href="dashboard.html" class="bg-white text-indigo-600 px-4 py-2 rounded hover:bg-gray-200 text-sm">العودة للوحة التحكم</a>
+    </div>
+  </header>
+
+  <!-- منطقة الدردشة -->
+  <main class="container mx-auto px-4 py-8">
+    <div id="chat-container" class="mb-4 shadow"></div>
+
+    <div class="flex gap-2">
+      <input type="text" id="chat-input" placeholder="اكتب سؤالك هنا..." class="flex-1 border rounded px-3 py-2 focus:outline-none focus:ring">
+      <button id="send-btn" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">إرسال</button>
+    </div>
+  </main>
+
+  <!-- سكريبت الدردشة -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const chatInput = document.getElementById("chat-input");
+      const sendBtn = document.getElementById("send-btn");
+      const chatContainer = document.getElementById("chat-container");
+
+      function addMessage(message, isUser) {
+        const div = document.createElement("div");
+        div.className = "chat-message " + (isUser ? "text-right" : "text-left");
+        div.innerHTML = `
+          <div class="flex ${isUser ? 'justify-end' : 'items-start'}">
+            ${!isUser ? '<div class="w-8 h-8 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mr-3"><i class="fas fa-robot"></i></div>' : ''}
+            <div class="bg-${isUser ? 'indigo-100' : 'gray-100'} text-${isUser ? 'indigo-800' : 'gray-800'} rounded-lg p-3 max-w-md">
+              <p class="text-sm whitespace-pre-line">${message}</p>
+            </div>
+          </div>
+        `;
+        chatContainer.appendChild(div);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+      }
+
+      async function sendMessage() {
+        const message = chatInput.value.trim();
+        if (!message) return;
+
+        addMessage(message, true);
+        chatInput.value = "";
+
+        try {
+          const res = await fetch("/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message })
+          });
+
+          const data = await res.json();
+          addMessage(data.reply || "❌ لا يوجد رد من الذكاء الاصطناعي.", false);
+        } catch (err) {
+          addMessage("⚠ فشل الاتصال بـ Rased AI. تأكد من أن الخادم يعمل.", false);
+        }
+      }
+
+      sendBtn.addEventListener("click", sendMessage);
+      chatInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") sendMessage();
+      });
+    });
+  </script>
+</body>
+</html>

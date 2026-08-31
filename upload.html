@@ -1,0 +1,1644 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>رفع ملف Excel - Rased AI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    body { font-family: 'Cairo', sans-serif; background-color: #f9fafb; }
+    .chart-container { width: 100%; height: 400px; margin: 20px 0; }
+  </style>
+</head>
+<body class="text-gray-800">
+
+  <!-- رأس الصفحة -->
+  <header class="bg-indigo-600 text-white py-4 shadow-md">
+    <div class="container mx-auto flex justify-between items-center px-4">
+      <h1 class="text-xl font-bold">📁 رفع ملف Excel</h1>
+      <a href="dashboard.html" class="bg-white text-indigo-600 px-4 py-2 rounded hover:bg-gray-200 text-sm">العودة للوحة التحكم</a>
+    </div>
+  </header>
+
+  <!-- واجهة التحميل -->
+  <main class="container mx-auto px-4 py-8">
+    <div class="bg-white p-6 rounded shadow-md max-w-4xl mx-auto">
+      <h2 class="text-lg font-bold mb-4 text-center">حدد ملف Excel يحتوي على بيانات مشروعك</h2>
+
+      <!-- خيار اختيار اللغة -->
+      <div class="mb-6 bg-gray-50 p-4 rounded-lg">
+        <h3 class="font-bold text-gray-800 mb-2">🌐 اختر لغة العرض / Choose Display Language:</h3>
+        <select id="language-selector" class="w-full p-2 border border-gray-300 rounded">
+          <option value="ar">العربية (Arabic)</option>
+          <option value="en">English (الإنجليزية)</option>
+        </select>
+      </div>
+
+      <!-- معلومات أنواع الملفات المدعومة -->
+      <div class="mb-6 bg-blue-50 p-4 rounded-lg">
+        <h3 class="font-bold text-blue-800 mb-2" id="supported-files-title">أنواع الملفات المدعومة:</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 text-sm">
+          <span class="bg-blue-100 px-2 py-1 rounded">📊 Project_Info.xlsx</span>
+          <span class="bg-green-100 px-2 py-1 rounded">💰 Sales.xlsx</span>
+          <span class="bg-red-100 px-2 py-1 rounded">🛒 Purchases.xlsx</span>
+          <span class="bg-yellow-100 px-2 py-1 rounded">📉 Expenses.xlsx</span>
+          <span class="bg-purple-100 px-2 py-1 rounded">👥 Employees.xlsx</span>
+          <span class="bg-indigo-100 px-2 py-1 rounded">💼 Budget.xlsx</span>
+          <span class="bg-pink-100 px-2 py-1 rounded">📈 Marketing.xlsx</span>
+          <span class="bg-gray-100 px-2 py-1 rounded">🏛️ Tax.xlsx</span>
+          <span class="bg-orange-100 px-2 py-1 rounded">📊 KPI.xlsx</span>
+        </div>
+      </div>
+
+      <div class="text-center">
+        <input type="file" id="excelFile" accept=".xlsx, .xls" class="mb-4 block mx-auto">
+        <button onclick="handleUpload()" class="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700">📤 رفع ومعالجة</button>
+      </div>
+
+      <!-- منطقة عرض النتائج -->
+      <div id="results" class="mt-8 hidden">
+        <div id="file-info" class="mb-6 p-4 bg-gray-50 rounded-lg"></div>
+        <div id="charts-container" class="space-y-8"></div>
+        <div id="summary" class="mt-6 p-4 bg-green-50 rounded-lg"></div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // قاموس الترجمة
+    const translations = {
+      ar: {
+        supportedFiles: 'أنواع الملفات المدعومة:',
+        uploadAndProcess: '📤 رفع ومعالجة',
+        fileAnalysis: '📋 تحليل الملف',
+        fileType: 'نوع الملف:',
+        recordCount: 'عدد السجلات:',
+        columnCount: 'عدد الأعمدة:',
+        salesSummary: '💰 ملخص المبيعات',
+        totalSales: 'إجمالي المبيعات',
+        avgSale: 'متوسط البيعة',
+        transactionCount: 'عدد المعاملات',
+        expensesSummary: '📉 ملخص المصاريف',
+        totalExpenses: 'إجمالي المصاريف',
+        avgExpense: 'متوسط المصروف',
+        employeesSummary: '👥 ملخص الموظفين',
+        employeeCount: 'عدد الموظفين',
+        avgSalary: 'متوسط الراتب',
+        budgetSummary: '💼 ملخص الميزانية',
+        totalBudget: 'إجمالي الميزانية',
+        actualSpending: 'الإنفاق الفعلي',
+        savingsRate: 'نسبة التوفير',
+        marketingSummary: '📈 ملخص التسويق',
+        totalCost: 'إجمالي التكلفة',
+        totalReach: 'إجمالي الوصول',
+        avgCostPerReach: 'متوسط التكلفة لكل وصول',
+        kpiSummary: '📊 ملخص مؤشرات الأداء',
+        indicatorCount: 'عدد المؤشرات',
+        avgPerformance: 'متوسط الأداء',
+        generalAnalysis: '📊 تحليل عام',
+        analysisComplete: 'تم تحليل البيانات بنجاح. يمكنك الآن الانتقال للتحليل المفصل.',
+        aiAnalysisTitle: '🤖 التحليل الشامل من الذكاء الاصطناعي',
+        detailedAnalysis: '📊 التحليل المفصل',
+        smartRecommendations: '💡 التوصيات الذكية',
+        keyPerformance: '📈 مؤشرات الأداء الرئيسية',
+        totalValues: 'إجمالي القيم',
+        average: 'المتوسط',
+        recordsCount: 'عدد السجلات',
+        advancedCharts: '📊 رسوم بيانية متقدمة',
+        exportReport: '📄 تصدير التقرير',
+        askAI: '🤔 طرح سؤال للذكاء الاصطناعي'
+      },
+      en: {
+        supportedFiles: 'Supported File Types:',
+        uploadAndProcess: '📤 Upload & Process',
+        fileAnalysis: '📋 File Analysis',
+        fileType: 'File Type:',
+        recordCount: 'Record Count:',
+        columnCount: 'Column Count:',
+        salesSummary: '💰 Sales Summary',
+        totalSales: 'Total Sales',
+        avgSale: 'Average Sale',
+        transactionCount: 'Transaction Count',
+        expensesSummary: '📉 Expenses Summary',
+        totalExpenses: 'Total Expenses',
+        avgExpense: 'Average Expense',
+        employeesSummary: '👥 Employees Summary',
+        employeeCount: 'Employee Count',
+        avgSalary: 'Average Salary',
+        budgetSummary: '💼 Budget Summary',
+        totalBudget: 'Total Budget',
+        actualSpending: 'Actual Spending',
+        savingsRate: 'Savings Rate',
+        marketingSummary: '📈 Marketing Summary',
+        totalCost: 'Total Cost',
+        totalReach: 'Total Reach',
+        avgCostPerReach: 'Average Cost Per Reach',
+        kpiSummary: '📊 KPI Summary',
+        indicatorCount: 'Indicator Count',
+        avgPerformance: 'Average Performance',
+        generalAnalysis: '📊 General Analysis',
+        analysisComplete: 'Data analysis completed successfully. You can now proceed to detailed analysis.',
+        aiAnalysisTitle: '🤖 Comprehensive AI Analysis',
+        detailedAnalysis: '📊 Detailed Analysis',
+        smartRecommendations: '💡 Smart Recommendations',
+        keyPerformance: '📈 Key Performance Indicators',
+        totalValues: 'Total Values',
+        average: 'Average',
+        recordsCount: 'Records Count',
+        advancedCharts: '📊 Advanced Charts',
+        exportReport: '📄 Export Report',
+        askAI: '🤔 Ask AI Question'
+      }
+    };
+
+    // أنواع الملفات بالترجمة
+    const fileTypeNames = {
+      ar: {
+        'project_info': 'معلومات المؤسسة',
+        'sales': 'المبيعات',
+        'purchases': 'المشتريات',
+        'expenses': 'المصاريف',
+        'employees': 'الموظفين',
+        'budget': 'الميزانية',
+        'marketing': 'التسويق',
+        'tax': 'الضرائب',
+        'kpi': 'مؤشرات الأداء',
+        'general': 'عام'
+      },
+      en: {
+        'project_info': 'Company Information',
+        'sales': 'Sales',
+        'purchases': 'Purchases',
+        'expenses': 'Expenses',
+        'employees': 'Employees',
+        'budget': 'Budget',
+        'marketing': 'Marketing',
+        'tax': 'Tax',
+        'kpi': 'Key Performance Indicators',
+        'general': 'General'
+      }
+    };
+
+    // وظيفة الحصول على الترجمة
+    function getTranslation(key) {
+      const lang = document.getElementById('language-selector')?.value || 'ar';
+      return translations[lang][key] || translations.ar[key] || key;
+    }
+
+    // وظيفة تحديث واجهة المستخدم حسب اللغة المختارة
+    function updateLanguage() {
+      const lang = document.getElementById('language-selector').value;
+      
+      // تحديث النصوص
+      document.getElementById('supported-files-title').textContent = getTranslation('supportedFiles');
+      
+      // تحديث زر الرفع
+      const uploadBtn = document.querySelector('button[onclick="handleUpload()"]');
+      if (uploadBtn) {
+        uploadBtn.innerHTML = getTranslation('uploadAndProcess');
+      }
+      
+      // تحديث اتجاه النص
+      if (lang === 'en') {
+        document.documentElement.setAttribute('dir', 'ltr');
+        document.documentElement.setAttribute('lang', 'en');
+      } else {
+        document.documentElement.setAttribute('dir', 'rtl');
+        document.documentElement.setAttribute('lang', 'ar');
+      }
+    }
+
+    // إضافة مستمع للغة
+    document.addEventListener('DOMContentLoaded', function() {
+      const languageSelector = document.getElementById('language-selector');
+      if (languageSelector) {
+        languageSelector.addEventListener('change', updateLanguage);
+      }
+    });
+
+    function detectFileType(filename, data) {
+      const name = filename.toLowerCase();
+      const headers = data[0] ? Object.keys(data[0]).map(h => h.toLowerCase()) : [];
+
+      // تحديد نوع الملف بناءً على الاسم والعناوين
+      if (name.includes('project') || name.includes('info') || name.includes('company')) {
+        return 'project_info';
+      } else if (name.includes('sales') || name.includes('مبيعات') || headers.some(h => h.includes('sales') || h.includes('مبيعات'))) {
+        return 'sales';
+      } else if (name.includes('purchases') || name.includes('مشتريات') || headers.some(h => h.includes('purchase') || h.includes('مشتريات'))) {
+        return 'purchases';
+      } else if (name.includes('expenses') || name.includes('مصاريف') || headers.some(h => h.includes('expense') || h.includes('مصاريف'))) {
+        return 'expenses';
+      } else if (name.includes('employees') || name.includes('موظفين') || headers.some(h => h.includes('employee') || h.includes('موظف'))) {
+        return 'employees';
+      } else if (name.includes('budget') || name.includes('ميزانية') || headers.some(h => h.includes('budget') || h.includes('ميزانية'))) {
+        return 'budget';
+      } else if (name.includes('marketing') || name.includes('تسويق') || headers.some(h => h.includes('marketing') || h.includes('تسويق'))) {
+        return 'marketing';
+      } else if (name.includes('tax') || name.includes('ضرائب') || headers.some(h => h.includes('tax') || h.includes('ضريبة'))) {
+        return 'tax';
+      } else if (name.includes('kpi') || name.includes('performance') || headers.some(h => h.includes('kpi') || h.includes('أداء'))) {
+        return 'kpi';
+      }
+      return 'general';
+    }
+
+    function analyzeData(data, fileType) {
+      const results = document.getElementById('results');
+      const fileInfo = document.getElementById('file-info');
+      const chartsContainer = document.getElementById('charts-container');
+      const summary = document.getElementById('summary');
+
+      results.classList.remove('hidden');
+      chartsContainer.innerHTML = '';
+
+      // عرض معلومات الملف مع الترجمة
+      const lang = document.getElementById('language-selector')?.value || 'ar';
+      const typeName = fileTypeNames[lang][fileType] || fileType;
+
+      fileInfo.innerHTML = `
+        <h3 class="font-bold text-lg mb-2">${getTranslation('fileAnalysis')}</h3>
+        <p><strong>${getTranslation('fileType')}</strong> ${typeName}</p>
+        <p><strong>${getTranslation('recordCount')}</strong> ${data.length}</p>
+        <p><strong>${getTranslation('columnCount')}</strong> ${Object.keys(data[0] || {}).length}</p>
+      `;
+
+      // تحليل البيانات حسب النوع
+      switch(fileType) {
+        case 'sales':
+          analyzeSalesData(data);
+          break;
+        case 'expenses':
+          analyzeExpensesData(data);
+          break;
+        case 'employees':
+          analyzeEmployeesData(data);
+          break;
+        case 'budget':
+          analyzeBudgetData(data);
+          break;
+        case 'marketing':
+          analyzeMarketingData(data);
+          break;
+        case 'kpi':
+          analyzeKPIData(data);
+          break;
+        default:
+          analyzeGeneralData(data);
+      }
+
+      // حفظ البيانات المحللة
+      localStorage.setItem('excelData', JSON.stringify(data));
+      localStorage.setItem('fileType', fileType);
+      localStorage.setItem('analysisResults', JSON.stringify({
+        type: fileType,
+        recordCount: data.length,
+        columnCount: Object.keys(data[0] || {}).length
+      }));
+    }
+
+    function analyzeSalesData(data) {
+      const chartsContainer = document.getElementById('charts-container');
+      const summary = document.getElementById('summary');
+
+      // البحث عن الأعمدة المناسبة
+      const headers = Object.keys(data[0] || {});
+      const dateCol = headers.find(h => h.toLowerCase().includes('date') || h.includes('تاريخ'));
+      const amountCol = headers.find(h => h.toLowerCase().includes('amount') || h.includes('مبلغ') || h.includes('قيمة'));
+      const productCol = headers.find(h => h.toLowerCase().includes('product') || h.includes('منتج'));
+
+      // إنشاء الرسوم البيانية
+      if (dateCol && amountCol) {
+        createSalesChart(data, dateCol, amountCol);
+      }
+
+      if (productCol && amountCol) {
+        createProductSalesChart(data, productCol, amountCol);
+      }
+
+      // ملخص المبيعات
+      const totalSales = data.reduce((sum, row) => sum + (parseFloat(row[amountCol]) || 0), 0);
+      const avgSale = totalSales / data.length;
+
+      summary.innerHTML = `
+        <h3 class="font-bold text-lg mb-2">${getTranslation('salesSummary')}</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="text-center">
+            <div class="text-2xl font-bold text-green-600">${totalSales.toLocaleString()}</div>
+            <div class="text-sm text-gray-600">${getTranslation('totalSales')}</div>
+          </div>
+          <div class="text-center">
+            <div class="text-2xl font-bold text-blue-600">${avgSale.toLocaleString()}</div>
+            <div class="text-sm text-gray-600">${getTranslation('avgSale')}</div>
+          </div>
+          <div class="text-center">
+            <div class="text-2xl font-bold text-purple-600">${data.length}</div>
+            <div class="text-sm text-gray-600">${getTranslation('transactionCount')}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function analyzeExpensesData(data) {
+      const chartsContainer = document.getElementById('charts-container');
+      const summary = document.getElementById('summary');
+
+      const headers = Object.keys(data[0] || {});
+      const categoryCol = headers.find(h => h.toLowerCase().includes('category') || h.includes('فئة') || h.includes('نوع'));
+      const amountCol = headers.find(h => h.toLowerCase().includes('amount') || h.includes('مبلغ') || h.includes('قيمة'));
+
+      if (categoryCol && amountCol) {
+        createExpensesChart(data, categoryCol, amountCol);
+      }
+
+      const totalExpenses = data.reduce((sum, row) => sum + (parseFloat(row[amountCol]) || 0), 0);
+      const avgExpense = totalExpenses / data.length;
+
+      summary.innerHTML = `
+        <h3 class="font-bold text-lg mb-2">${getTranslation('expensesSummary')}</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="text-center">
+            <div class="text-2xl font-bold text-red-600">${totalExpenses.toLocaleString()}</div>
+            <div class="text-sm text-gray-600">${getTranslation('totalExpenses')}</div>
+          </div>
+          <div class="text-center">
+            <div class="text-2xl font-bold text-orange-600">${avgExpense.toLocaleString()}</div>
+            <div class="text-sm text-gray-600">${getTranslation('avgExpense')}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function analyzeEmployeesData(data) {
+      const chartsContainer = document.getElementById('charts-container');
+      const summary = document.getElementById('summary');
+
+      const headers = Object.keys(data[0] || {});
+      const departmentCol = headers.find(h => h.toLowerCase().includes('department') || h.includes('قسم'));
+      const salaryCol = headers.find(h => h.toLowerCase().includes('salary') || h.includes('راتب'));
+
+      if (departmentCol) {
+        createEmployeeDistributionChart(data, departmentCol);
+      }
+
+      if (salaryCol) {
+        createSalaryChart(data, salaryCol);
+      }
+
+      const totalEmployees = data.length;
+      const avgSalary = salaryCol ? data.reduce((sum, row) => sum + (parseFloat(row[salaryCol]) || 0), 0) / data.length : 0;
+
+      summary.innerHTML = `
+        <h3 class="font-bold text-lg mb-2">👥 ملخص الموظفين</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="text-center">
+            <div class="text-2xl font-bold text-blue-600">${totalEmployees}</div>
+            <div class="text-sm text-gray-600">عدد الموظفين</div>
+          </div>
+          <div class="text-center">
+            <div class="text-2xl font-bold text-green-600">${avgSalary.toLocaleString()}</div>
+            <div class="text-sm text-gray-600">متوسط الراتب</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function analyzeBudgetData(data) {
+      const chartsContainer = document.getElementById('charts-container');
+      const summary = document.getElementById('summary');
+
+      const headers = Object.keys(data[0] || {});
+      const categoryCol = headers.find(h => h.toLowerCase().includes('category') || h.includes('فئة') || h.includes('بند'));
+      const budgetCol = headers.find(h => h.toLowerCase().includes('budget') || h.includes('ميزانية') || h.includes('مخطط'));
+      const actualCol = headers.find(h => h.toLowerCase().includes('actual') || h.includes('فعلي') || h.includes('منفق'));
+
+      if (categoryCol && budgetCol) {
+        createBudgetChart(data, categoryCol, budgetCol, actualCol);
+      }
+
+      const totalBudget = data.reduce((sum, row) => sum + (parseFloat(row[budgetCol]) || 0), 0);
+      const totalActual = actualCol ? data.reduce((sum, row) => sum + (parseFloat(row[actualCol]) || 0), 0) : 0;
+
+      summary.innerHTML = `
+        <h3 class="font-bold text-lg mb-2">💼 ملخص الميزانية</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="text-center">
+            <div class="text-2xl font-bold text-blue-600">${totalBudget.toLocaleString()}</div>
+            <div class="text-sm text-gray-600">إجمالي الميزانية</div>
+          </div>
+          <div class="text-center">
+            <div class="text-2xl font-bold text-green-600">${totalActual.toLocaleString()}</div>
+            <div class="text-sm text-gray-600">الإنفاق الفعلي</div>
+          </div>
+          <div class="text-center">
+            <div class="text-2xl font-bold text-purple-600">${((totalBudget - totalActual) / totalBudget * 100).toFixed(1)}%</div>
+            <div class="text-sm text-gray-600">نسبة التوفير</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function analyzeMarketingData(data) {
+      const chartsContainer = document.getElementById('charts-container');
+      const summary = document.getElementById('summary');
+
+      const headers = Object.keys(data[0] || {});
+      const campaignCol = headers.find(h => h.toLowerCase().includes('campaign') || h.includes('حملة'));
+      const costCol = headers.find(h => h.toLowerCase().includes('cost') || h.includes('تكلفة') || h.includes('مبلغ'));
+      const reachCol = headers.find(h => h.toLowerCase().includes('reach') || h.includes('وصول') || h.includes('مشاهدات'));
+
+      if (campaignCol && costCol) {
+        createMarketingChart(data, campaignCol, costCol);
+      }
+
+      const totalCost = data.reduce((sum, row) => sum + (parseFloat(row[costCol]) || 0), 0);
+      const totalReach = reachCol ? data.reduce((sum, row) => sum + (parseFloat(row[reachCol]) || 0), 0) : 0;
+      const avgCPC = totalReach > 0 ? totalCost / totalReach : 0;
+
+      summary.innerHTML = `
+        <h3 class="font-bold text-lg mb-2">📈 ملخص التسويق</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="text-center">
+            <div class="text-2xl font-bold text-pink-600">${totalCost.toLocaleString()}</div>
+            <div class="text-sm text-gray-600">إجمالي التكلفة</div>
+          </div>
+          <div class="text-center">
+            <div class="text-2xl font-bold text-blue-600">${totalReach.toLocaleString()}</div>
+            <div class="text-sm text-gray-600">إجمالي الوصول</div>
+          </div>
+          <div class="text-center">
+            <div class="text-2xl font-bold text-green-600">${avgCPC.toFixed(2)}</div>
+            <div class="text-sm text-gray-600">متوسط التكلفة لكل وصول</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function analyzeKPIData(data) {
+      const chartsContainer = document.getElementById('charts-container');
+      const summary = document.getElementById('summary');
+
+      const headers = Object.keys(data[0] || {});
+      const metricCol = headers.find(h => h.toLowerCase().includes('metric') || h.includes('مؤشر') || h.includes('مقياس'));
+      const valueCol = headers.find(h => h.toLowerCase().includes('value') || h.includes('قيمة') || h.includes('نتيجة'));
+      const targetCol = headers.find(h => h.toLowerCase().includes('target') || h.includes('هدف') || h.includes('مستهدف'));
+
+      if (metricCol && valueCol) {
+        createKPIChart(data, metricCol, valueCol, targetCol);
+      }
+
+      const avgPerformance = targetCol ? 
+        data.reduce((sum, row) => {
+          const value = parseFloat(row[valueCol]) || 0;
+          const target = parseFloat(row[targetCol]) || 1;
+          return sum + (value / target * 100);
+        }, 0) / data.length : 0;
+
+      summary.innerHTML = `
+        <h3 class="font-bold text-lg mb-2">📊 ملخص مؤشرات الأداء</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="text-center">
+            <div class="text-2xl font-bold text-indigo-600">${data.length}</div>
+            <div class="text-sm text-gray-600">عدد المؤشرات</div>
+          </div>
+          <div class="text-center">
+            <div class="text-2xl font-bold text-green-600">${avgPerformance.toFixed(1)}%</div>
+            <div class="text-sm text-gray-600">متوسط الأداء</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function analyzeGeneralData(data) {
+      const chartsContainer = document.getElementById('charts-container');
+      const summary = document.getElementById('summary');
+
+      const headers = Object.keys(data[0] || {});
+      const numericCols = headers.filter(h => {
+        return data.some(row => !isNaN(parseFloat(row[h])));
+      });
+
+      if (numericCols.length > 0) {
+        createGeneralChart(data, numericCols);
+      }
+
+      summary.innerHTML = `
+        <h3 class="font-bold text-lg mb-2">📊 تحليل عام</h3>
+        <p>تم تحليل البيانات بنجاح. يمكنك الآن الانتقال للتحليل المفصل.</p>
+      `;
+    }
+
+    // دوال إنشاء الرسوم البيانية
+    function createSalesChart(data, dateCol, amountCol) {
+      const chartsContainer = document.getElementById('charts-container');
+      const canvasId = 'salesChart';
+
+      const chartDiv = document.createElement('div');
+      chartDiv.className = 'chart-container';
+      chartDiv.innerHTML = `
+        <h3 class="font-bold text-lg mb-4">📈 منحنى المبيعات</h3>
+        <canvas id="${canvasId}"></canvas>
+      `;
+      chartsContainer.appendChild(chartDiv);
+
+      const ctx = document.getElementById(canvasId).getContext('2d');
+      const chartData = data.map(row => ({
+        x: new Date(row[dateCol]),
+        y: parseFloat(row[amountCol]) || 0
+      }));
+
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          datasets: [{
+            label: 'المبيعات',
+            data: chartData,
+            borderColor: 'rgb(59, 130, 246)',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            tension: 0.4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              type: 'time',
+              time: {
+                unit: 'day'
+              }
+            },
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+
+    function createProductSalesChart(data, productCol, amountCol) {
+      const chartsContainer = document.getElementById('charts-container');
+      const canvasId = 'productSalesChart';
+
+      const chartDiv = document.createElement('div');
+      chartDiv.className = 'chart-container';
+      chartDiv.innerHTML = `
+        <h3 class="font-bold text-lg mb-4">🥧 توزيع المبيعات حسب المنتج</h3>
+        <canvas id="${canvasId}"></canvas>
+      `;
+      chartsContainer.appendChild(chartDiv);
+
+      const ctx = document.getElementById(canvasId).getContext('2d');
+
+      // تجميع البيانات حسب المنتج
+      const productSales = {};
+      data.forEach(row => {
+        const product = row[productCol];
+        const amount = parseFloat(row[amountCol]) || 0;
+        productSales[product] = (productSales[product] || 0) + amount;
+      });
+
+      const labels = Object.keys(productSales);
+      const values = Object.values(productSales);
+
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: values,
+            backgroundColor: [
+              '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6',
+              '#06B6D4', '#84CC16', '#F97316', '#EC4899', '#6B7280'
+            ]
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }
+      });
+    }
+
+    function createExpensesChart(data, categoryCol, amountCol) {
+      const chartsContainer = document.getElementById('charts-container');
+      const canvasId = 'expensesChart';
+
+      const chartDiv = document.createElement('div');
+      chartDiv.className = 'chart-container';
+      chartDiv.innerHTML = `
+        <h3 class="font-bold text-lg mb-4">📊 توزيع المصاريف</h3>
+        <canvas id="${canvasId}"></canvas>
+      `;
+      chartsContainer.appendChild(chartDiv);
+
+      const ctx = document.getElementById(canvasId).getContext('2d');
+
+      // تجميع البيانات حسب الفئة
+      const categoryExpenses = {};
+      data.forEach(row => {
+        const category = row[categoryCol];
+        const amount = parseFloat(row[amountCol]) || 0;
+        categoryExpenses[category] = (categoryExpenses[category] || 0) + amount;
+      });
+
+      const labels = Object.keys(categoryExpenses);
+      const values = Object.values(categoryExpenses);
+
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'المصاريف',
+            data: values,
+            backgroundColor: 'rgba(239, 68, 68, 0.8)',
+            borderColor: 'rgb(239, 68, 68)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+
+    function createEmployeeDistributionChart(data, departmentCol) {
+      const chartsContainer = document.getElementById('charts-container');
+      const canvasId = 'employeeDistChart';
+
+      const chartDiv = document.createElement('div');
+      chartDiv.className = 'chart-container';
+      chartDiv.innerHTML = `
+        <h3 class="font-bold text-lg mb-4">👥 توزيع الموظفين حسب القسم</h3>
+        <canvas id="${canvasId}"></canvas>
+      `;
+      chartsContainer.appendChild(chartDiv);
+
+      const ctx = document.getElementById(canvasId).getContext('2d');
+
+      // تجميع البيانات حسب القسم
+      const departmentCount = {};
+      data.forEach(row => {
+        const department = row[departmentCol];
+        departmentCount[department] = (departmentCount[department] || 0) + 1;
+      });
+
+      const labels = Object.keys(departmentCount);
+      const values = Object.values(departmentCount);
+
+      new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: values,
+            backgroundColor: [
+              '#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6',
+              '#06B6D4', '#84CC16', '#F97316', '#EC4899', '#6B7280'
+            ]
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }
+      });
+    }
+
+    function createBudgetChart(data, categoryCol, budgetCol, actualCol) {
+      const chartsContainer = document.getElementById('charts-container');
+      const canvasId = 'budgetChart';
+
+      const chartDiv = document.createElement('div');
+      chartDiv.className = 'chart-container';
+      chartDiv.innerHTML = `
+        <h3 class="font-bold text-lg mb-4">💼 مقارنة الميزانية والإنفاق الفعلي</h3>
+        <canvas id="${canvasId}"></canvas>
+      `;
+      chartsContainer.appendChild(chartDiv);
+
+      const ctx = document.getElementById(canvasId).getContext('2d');
+
+      const labels = data.map(row => row[categoryCol]);
+      const budgetData = data.map(row => parseFloat(row[budgetCol]) || 0);
+      const actualData = actualCol ? data.map(row => parseFloat(row[actualCol]) || 0) : [];
+
+      const datasets = [{
+        label: 'الميزانية المخططة',
+        data: budgetData,
+        backgroundColor: 'rgba(59, 130, 246, 0.8)',
+        borderColor: 'rgb(59, 130, 246)',
+        borderWidth: 1
+      }];
+
+      if (actualCol) {
+        datasets.push({
+          label: 'الإنفاق الفعلي',
+          data: actualData,
+          backgroundColor: 'rgba(16, 185, 129, 0.8)',
+          borderColor: 'rgb(16, 185, 129)',
+          borderWidth: 1
+        });
+      }
+
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: datasets
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+
+    function createMarketingChart(data, campaignCol, costCol) {
+      const chartsContainer = document.getElementById('charts-container');
+      const canvasId = 'marketingChart';
+
+      const chartDiv = document.createElement('div');
+      chartDiv.className = 'chart-container';
+      chartDiv.innerHTML = `
+        <h3 class="font-bold text-lg mb-4">📈 تكلفة الحملات التسويقية</h3>
+        <canvas id="${canvasId}"></canvas>
+      `;
+      chartsContainer.appendChild(chartDiv);
+
+      const ctx = document.getElementById(canvasId).getContext('2d');
+
+      const labels = data.map(row => row[campaignCol]);
+      const costs = data.map(row => parseFloat(row[costCol]) || 0);
+
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: costs,
+            backgroundColor: [
+              '#EC4899', '#8B5CF6', '#06B6D4', '#10B981', '#F59E0B',
+              '#EF4444', '#3B82F6', '#84CC16', '#F97316', '#6B7280'
+            ]
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }
+      });
+    }
+
+    function createKPIChart(data, metricCol, valueCol, targetCol) {
+      const chartsContainer = document.getElementById('charts-container');
+      const canvasId = 'kpiChart';
+
+      const chartDiv = document.createElement('div');
+      chartDiv.className = 'chart-container';
+      chartDiv.innerHTML = `
+        <h3 class="font-bold text-lg mb-4">📊 مؤشرات الأداء الرئيسية</h3>
+        <canvas id="${canvasId}"></canvas>
+      `;
+      chartsContainer.appendChild(chartDiv);
+
+      const ctx = document.getElementById(canvasId).getContext('2d');
+
+      const labels = data.map(row => row[metricCol]);
+      const values = data.map(row => parseFloat(row[valueCol]) || 0);
+      const targets = targetCol ? data.map(row => parseFloat(row[targetCol]) || 0) : [];
+
+      const datasets = [{
+        label: 'القيمة الحالية',
+        data: values,
+        backgroundColor: 'rgba(99, 102, 241, 0.8)',
+        borderColor: 'rgb(99, 102, 241)',
+        borderWidth: 1
+      }];
+
+      if (targetCol) {
+        datasets.push({
+          label: 'الهدف المطلوب',
+          data: targets,
+          backgroundColor: 'rgba(34, 197, 94, 0.8)',
+          borderColor: 'rgb(34, 197, 94)',
+          borderWidth: 1
+        });
+      }
+
+      new Chart(ctx, {
+        type: 'radar',
+        data: {
+          labels: labels,
+          datasets: datasets
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            r: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+
+    function createSalaryChart(data, salaryCol) {
+      const chartsContainer = document.getElementById('charts-container');
+      const canvasId = 'salaryChart';
+
+      const chartDiv = document.createElement('div');
+      chartDiv.className = 'chart-container';
+      chartDiv.innerHTML = `
+        <h3 class="font-bold text-lg mb-4">💰 توزيع الرواتب</h3>
+        <canvas id="${canvasId}"></canvas>
+      `;
+      chartsContainer.appendChild(chartDiv);
+
+      const ctx = document.getElementById(canvasId).getContext('2d');
+
+      const salaries = data.map(row => parseFloat(row[salaryCol]) || 0);
+
+      // تجميع الرواتب في فئات
+      const ranges = ['0-30000', '30000-50000', '50000-80000', '80000-120000', '120000+'];
+      const counts = [0, 0, 0, 0, 0];
+
+      salaries.forEach(salary => {
+        if (salary < 30000) counts[0]++;
+        else if (salary < 50000) counts[1]++;
+        else if (salary < 80000) counts[2]++;
+        else if (salary < 120000) counts[3]++;
+        else counts[4]++;
+      });
+
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ranges,
+          datasets: [{
+            label: 'عدد الموظفين',
+            data: counts,
+            backgroundColor: 'rgba(34, 197, 94, 0.8)',
+            borderColor: 'rgb(34, 197, 94)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+
+    function createGeneralChart(data, numericCols) {
+      const chartsContainer = document.getElementById('charts-container');
+      const canvasId = 'generalChart';
+
+      const chartDiv = document.createElement('div');
+      chartDiv.className = 'chart-container';
+      chartDiv.innerHTML = `
+        <h3 class="font-bold text-lg mb-4">📈 تحليل البيانات الرقمية</h3>
+        <canvas id="${canvasId}"></canvas>
+      `;
+      chartsContainer.appendChild(chartDiv);
+
+      const ctx = document.getElementById(canvasId).getContext('2d');
+
+      const datasets = numericCols.slice(0, 3).map((col, index) => ({
+        label: col,
+        data: data.map(row => parseFloat(row[col]) || 0),
+        borderColor: ['#3B82F6', '#10B981', '#F59E0B'][index],
+        backgroundColor: [`rgba(59, 130, 246, 0.1)`, `rgba(16, 185, 129, 0.1)`, `rgba(245, 158, 11, 0.1)`][index],
+        tension: 0.4
+      }));
+
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: data.map((_, index) => `السجل ${index + 1}`),
+          datasets: datasets
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+
+    // الوظائف المساعدة
+    function showProgressBar() {
+      const progressHtml = `
+        <div id="progress-container" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 class="text-lg font-bold mb-4 text-center">معالجة الملف</h3>
+            <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4">
+              <div id="progress-bar" class="bg-indigo-600 h-2.5 rounded-full" style="width: 0%"></div>
+            </div>
+            <p id="progress-text" class="text-center text-sm text-gray-600">بدء المعالجة...</p>
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', progressHtml);
+    }
+
+    function updateProgress(percentage, message) {
+      const progressBar = document.getElementById('progress-bar');
+      const progressText = document.getElementById('progress-text');
+      if (progressBar) progressBar.style.width = percentage + '%';
+      if (progressText) progressText.textContent = message;
+    }
+
+    function hideProgressBar() {
+      const progressContainer = document.getElementById('progress-container');
+      if (progressContainer) progressContainer.remove();
+    }
+
+    function extractCompanyInfo(data, fileType) {
+      const companyInfo = {
+        name: '',
+        industry: '',
+        location: '',
+        establishmentDate: '',
+        employees: 0,
+        revenue: 0,
+        expenses: 0
+      };
+
+      // استخراج معلومات الشركة حسب نوع الملف
+      if (fileType === 'project_info') {
+        const firstRow = data[0] || {};
+        companyInfo.name = firstRow['Company Name'] || firstRow['اسم الشركة'] || '';
+        companyInfo.industry = firstRow['Industry'] || firstRow['الصناعة'] || '';
+        companyInfo.location = firstRow['Location'] || firstRow['الموقع'] || '';
+      }
+
+      // حساب الإيرادات والمصاريف من البيانات
+      const headers = Object.keys(data[0] || {});
+      const revenueCol = headers.find(h => h.toLowerCase().includes('revenue') || h.includes('إيراد') || h.includes('مبيعات'));
+      const expenseCol = headers.find(h => h.toLowerCase().includes('expense') || h.includes('مصروف') || h.includes('تكلفة'));
+
+      if (revenueCol) {
+        companyInfo.revenue = data.reduce((sum, row) => sum + (parseFloat(row[revenueCol]) || 0), 0);
+      }
+
+      if (expenseCol) {
+        companyInfo.expenses = data.reduce((sum, row) => sum + (parseFloat(row[expenseCol]) || 0), 0);
+      }
+
+      return companyInfo;
+    }
+
+    function calculateFinancialSummary(data, fileType) {
+      const summary = {
+        totalRevenue: 0,
+        totalExpenses: 0,
+        netProfit: 0,
+        averageTransaction: 0,
+        growthRate: 0,
+        profitMargin: 0
+      };
+
+      const headers = Object.keys(data[0] || {});
+      const amountCols = headers.filter(h => 
+        h.toLowerCase().includes('amount') || 
+        h.includes('مبلغ') || 
+        h.includes('قيمة') ||
+        h.toLowerCase().includes('revenue') ||
+        h.includes('إيراد')
+      );
+
+      if (amountCols.length > 0) {
+        const amounts = data.map(row => parseFloat(row[amountCols[0]]) || 0);
+        summary.totalRevenue = amounts.reduce((a, b) => a + b, 0);
+        summary.averageTransaction = summary.totalRevenue / amounts.length;
+        summary.netProfit = summary.totalRevenue - summary.totalExpenses;
+        summary.profitMargin = summary.totalRevenue > 0 ? (summary.netProfit / summary.totalRevenue * 100) : 0;
+      }
+
+      return summary;
+    }
+
+    async function generateAIRecommendations(data, fileType) {
+      // توليد توصيات ذكية بناءً على البيانات
+      const recommendations = [];
+
+      const headers = Object.keys(data[0] || {});
+      const totalRecords = data.length;
+
+      // توصيات عامة
+      recommendations.push({
+        type: 'success',
+        category: 'تحليل البيانات',
+        title: 'تم تحليل البيانات بنجاح',
+        description: `تم تحليل ${totalRecords} سجل بنجاح من ملف ${fileType}`,
+        priority: 'منخفضة'
+      });
+
+      // توصيات مالية
+      if (fileType === 'sales' || fileType === 'expenses') {
+        const amountCol = headers.find(h => h.toLowerCase().includes('amount') || h.includes('مبلغ'));
+        if (amountCol) {
+          const amounts = data.map(row => parseFloat(row[amountCol]) || 0);
+          const total = amounts.reduce((a, b) => a + b, 0);
+          const average = total / amounts.length;
+
+          if (fileType === 'sales' && average < 5000) {
+            recommendations.push({
+              type: 'warning',
+              category: 'المبيعات',
+              title: 'متوسط المبيعات منخفض',
+              description: `متوسط المبيعات ${average.toFixed(0)} دج. يُنصح بمراجعة استراتيجية التسعير والتسويق`,
+              priority: 'عالية'
+            });
+          }
+
+          if (fileType === 'expenses') {
+            recommendations.push({
+              type: 'info',
+              category: 'المصاريف',
+              title: 'مراقبة المصاريف',
+              description: `إجمالي المصاريف ${total.toLocaleString()} دج. راقب المصاريف غير الضرورية`,
+              priority: 'متوسطة'
+            });
+          }
+        }
+      }
+
+      // توصيات للموظفين
+      if (fileType === 'employees') {
+        const deptCol = headers.find(h => h.toLowerCase().includes('department') || h.includes('قسم'));
+        if (deptCol) {
+          const departments = [...new Set(data.map(row => row[deptCol]))];
+          if (departments.length > 5) {
+            recommendations.push({
+              type: 'info',
+              category: 'الموارد البشرية',
+              title: 'تنوع الأقسام',
+              description: `لديك ${departments.length} أقسام مختلفة. تأكد من التنسيق الجيد بينها`,
+              priority: 'متوسطة'
+            });
+          }
+        }
+      }
+
+      return recommendations;
+    }
+
+    async function sendDataToAI(analysisResult) {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      
+      try {
+        console.log('🤖 إرسال البيانات للذكاء الاصطناعي للتحليل...');
+        
+        const response = await fetch('/analyze-excel', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            fileData: analysisResult.data,
+            fileName: analysisResult.fileName,
+            fileType: analysisResult.fileType,
+            userId: currentUser?.id,
+            language: document.getElementById('language-selector')?.value || 'ar',
+            basicAnalysis: {
+              totalRecords: analysisResult.totalRecords,
+              companyInfo: analysisResult.companyInfo,
+              financialSummary: analysisResult.financialSummary
+            }
+          })
+        });
+
+        const aiAnalysisData = await response.json();
+
+        if (aiAnalysisData.success) {
+          console.log('✅ تم الحصول على التحليل من الذكاء الاصطناعي');
+          
+          // عرض التحليل الشامل من الذكاء الاصطناعي
+          displayAIAnalysis(aiAnalysisData.analysis);
+          
+          // حفظ التحليل الكامل
+          localStorage.setItem('aiAnalysis', JSON.stringify(aiAnalysisData.analysis));
+        } else {
+          console.warn('⚠️ فشل في الحصول على التحليل من الذكاء الاصطناعي، سيتم عرض التحليل الأساسي فقط');
+        }
+      } catch (error) {
+        console.error('❌ خطأ في إرسال البيانات للذكاء الاصطناعي:', error);
+        alert('⚠️ حدث خطأ في التحليل الذكي، سيتم عرض التحليل الأساسي فقط');
+      }
+    }
+
+    function displayAIAnalysis(aiAnalysis) {
+      const resultsDiv = document.getElementById('results');
+      
+      // إضافة قسم التحليل الذكي
+      const aiAnalysisDiv = document.createElement('div');
+      aiAnalysisDiv.className = 'mt-8 p-6 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border border-indigo-200';
+      aiAnalysisDiv.innerHTML = `
+        <div class="flex items-center mb-4">
+          <i class="fas fa-robot text-2xl text-indigo-600 mr-3"></i>
+          <h3 class="text-xl font-bold text-indigo-800">${getTranslation('aiAnalysisTitle')}</h3>
+        </div>
+        
+        <div class="bg-white rounded-lg p-4 mb-4 shadow-sm">
+          <h4 class="font-bold text-lg mb-3 text-gray-800">${getTranslation('detailedAnalysis')}</h4>
+          <div class="text-sm leading-relaxed whitespace-pre-line text-gray-700">
+            ${aiAnalysis.aiRecommendations || (getTranslation('recordsCount') === 'Records Count' ? 'Analyzing data...' : 'جاري تحليل البيانات...')}
+          </div>
+        </div>
+
+        ${aiAnalysis.detailedInsights && aiAnalysis.detailedInsights.length > 0 ? `
+        <div class="bg-white rounded-lg p-4 mb-4 shadow-sm">
+          <h4 class="font-bold text-lg mb-3 text-gray-800">${getTranslation('smartRecommendations')}</h4>
+          <div class="space-y-3">
+            ${aiAnalysis.detailedInsights.map(insight => `
+              <div class="flex items-start p-3 bg-blue-50 rounded-lg border border-blue-200">
+                <i class="fas fa-lightbulb text-blue-600 text-lg mr-3 mt-1"></i>
+                <div>
+                  <h5 class="font-semibold text-blue-800 mb-1">${insight.title}</h5>
+                  <p class="text-sm text-blue-700">${insight.description}</p>
+                  ${insight.priority ? `<span class="inline-block mt-2 px-2 py-1 text-xs rounded-full ${
+                    insight.priority === 'عالية' ? 'bg-red-100 text-red-800' : 
+                    insight.priority === 'متوسطة' ? 'bg-yellow-100 text-yellow-800' : 
+                    'bg-green-100 text-green-800'
+                  }">${insight.priority}</span>` : ''}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        ` : ''}
+
+        <div class="bg-white rounded-lg p-4 shadow-sm">
+          <h4 class="font-bold text-lg mb-3 text-gray-800">${getTranslation('keyPerformance')}</h4>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="text-center p-3 bg-green-50 rounded-lg">
+              <div class="text-2xl font-bold text-green-600">${aiAnalysis.statistics?.totalAmount?.toLocaleString() || '0'}</div>
+              <div class="text-sm text-green-700">${getTranslation('totalValues')}</div>
+            </div>
+            <div class="text-center p-3 bg-blue-50 rounded-lg">
+              <div class="text-2xl font-bold text-blue-600">${aiAnalysis.statistics?.averageAmount?.toLocaleString() || '0'}</div>
+              <div class="text-sm text-blue-700">${getTranslation('average')}</div>
+            </div>
+            <div class="text-center p-3 bg-purple-50 rounded-lg">
+              <div class="text-2xl font-bold text-purple-600">${aiAnalysis.totalRecords || 0}</div>
+              <div class="text-sm text-purple-700">${getTranslation('recordsCount')}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4 flex flex-wrap gap-2">
+          <button onclick="generateAdvancedCharts()" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 text-sm">
+            ${getTranslation('advancedCharts')}
+          </button>
+          <button onclick="exportAnalysisReport()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm">
+            ${getTranslation('exportReport')}
+          </button>
+          <button onclick="askAIQuestion()" class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700 text-sm">
+            ${getTranslation('askAI')}
+          </button>
+        </div>
+      `;
+      
+      resultsDiv.appendChild(aiAnalysisDiv);
+    }
+
+    function generateAdvancedCharts() {
+      const aiAnalysis = JSON.parse(localStorage.getItem('aiAnalysis') || '{}');
+      const excelData = JSON.parse(localStorage.getItem('excelData') || '[]');
+      
+      if (excelData.length === 0) {
+        alert('⚠️ لا توجد بيانات لإنشاء الرسوم البيانية');
+        return;
+      }
+
+      // إنشاء رسوم بيانية متقدمة
+      const chartsContainer = document.getElementById('charts-container');
+      
+      const advancedChartsDiv = document.createElement('div');
+      advancedChartsDiv.className = 'mt-6';
+      advancedChartsDiv.innerHTML = `
+        <h4 class="font-bold text-lg mb-4 text-gray-800">📊 رسوم بيانية متقدمة</h4>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="bg-white p-4 rounded-lg shadow">
+            <h5 class="font-semibold mb-3">تحليل الاتجاهات</h5>
+            <canvas id="trendChart" width="400" height="200"></canvas>
+          </div>
+          <div class="bg-white p-4 rounded-lg shadow">
+            <h5 class="font-semibold mb-3">توزيع البيانات</h5>
+            <canvas id="distributionChart" width="400" height="200"></canvas>
+          </div>
+        </div>
+      `;
+      
+      chartsContainer.appendChild(advancedChartsDiv);
+      
+      // إنشاء الرسوم البيانية المتقدمة
+      createTrendChart(excelData);
+      createDistributionChart(excelData);
+    }
+
+    function createTrendChart(data) {
+      const ctx = document.getElementById('trendChart').getContext('2d');
+      const headers = Object.keys(data[0] || {});
+      const numericCol = headers.find(h => 
+        data.some(row => !isNaN(parseFloat(row[h])))
+      );
+
+      if (numericCol) {
+        const chartData = data.map((row, index) => ({
+          x: index + 1,
+          y: parseFloat(row[numericCol]) || 0
+        }));
+
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            datasets: [{
+              label: 'الاتجاه العام',
+              data: chartData,
+              borderColor: '#4F46E5',
+              backgroundColor: 'rgba(79, 70, 229, 0.1)',
+              tension: 0.4,
+              fill: true
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: true
+              }
+            },
+            scales: {
+              x: {
+                title: {
+                  display: true,
+                  text: 'التسلسل'
+                }
+              },
+              y: {
+                title: {
+                  display: true,
+                  text: numericCol
+                },
+                beginAtZero: true
+              }
+            }
+          }
+        });
+      }
+    }
+
+    function createDistributionChart(data) {
+      const ctx = document.getElementById('distributionChart').getContext('2d');
+      const headers = Object.keys(data[0] || {});
+      const numericCol = headers.find(h => 
+        data.some(row => !isNaN(parseFloat(row[h])))
+      );
+
+      if (numericCol) {
+        const values = data.map(row => parseFloat(row[numericCol]) || 0);
+        const ranges = ['0-25%', '25-50%', '50-75%', '75-100%'];
+        const max = Math.max(...values);
+        const counts = [0, 0, 0, 0];
+
+        values.forEach(value => {
+          const percentage = (value / max) * 100;
+          if (percentage <= 25) counts[0]++;
+          else if (percentage <= 50) counts[1]++;
+          else if (percentage <= 75) counts[2]++;
+          else counts[3]++;
+        });
+
+        new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: ranges,
+            datasets: [{
+              data: counts,
+              backgroundColor: ['#EF4444', '#F59E0B', '#10B981', '#3B82F6']
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'bottom'
+              }
+            }
+          }
+        });
+      }
+    }
+
+    async function askAIQuestion() {
+      const lang = document.getElementById('language-selector')?.value || 'ar';
+      const questionPrompt = lang === 'en' ? 
+        '🤔 What is your question about the data?' : 
+        '🤔 ما هو سؤالك حول البيانات؟';
+        
+      const question = prompt(questionPrompt);
+      if (!question) return;
+
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      const excelData = JSON.parse(localStorage.getItem('excelData') || '[]');
+      
+      const baseMessage = lang === 'en' ? 
+        `Based on the analyzed file data (${excelData.length} records): ${question}` :
+        `بناءً على بيانات الملف التي تم تحليلها (${excelData.length} سجل): ${question}`;
+      
+      try {
+        const response = await fetch('/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: baseMessage,
+            userId: currentUser?.id,
+            language: lang
+          })
+        });
+
+        const data = await response.json();
+        
+        // عرض الإجابة في مربع حوار
+        const responseTitle = lang === 'en' ? 
+          '🤖 AI Response:' : 
+          '🤖 إجابة الذكاء الاصطناعي:';
+          
+        alert(`${responseTitle}\n\n${data.reply}`);
+        
+      } catch (error) {
+        console.error('خطأ في طرح السؤال:', error);
+        const errorMsg = lang === 'en' ? 
+          '❌ Error connecting to AI' : 
+          '❌ حدث خطأ في الاتصال بالذكاء الاصطناعي';
+        alert(errorMsg);
+      }
+    }
+
+    function exportAnalysisReport() {
+      const aiAnalysis = JSON.parse(localStorage.getItem('aiAnalysis') || '{}');
+      const analysisResults = JSON.parse(localStorage.getItem('analysisResults') || '{}');
+      
+      const report = `
+تقرير التحليل الشامل - Rased AI
+=====================================
+
+📋 معلومات الملف:
+• اسم الملف: ${analysisResults.fileName || 'غير محدد'}
+• نوع البيانات: ${analysisResults.fileType || 'غير محدد'}
+• عدد السجلات: ${analysisResults.totalRecords || 0}
+• تاريخ التحليل: ${new Date().toLocaleDateString('ar')}
+
+🏢 معلومات الشركة:
+• الاسم: ${analysisResults.companyInfo?.name || 'غير محدد'}
+• النشاط: ${analysisResults.companyInfo?.industry || 'غير محدد'}
+• الموقع: ${analysisResults.companyInfo?.location || 'غير محدد'}
+
+💰 الملخص المالي:
+• إجمالي الإيرادات: ${analysisResults.financialSummary?.totalRevenue?.toLocaleString() || '0'} دج
+• إجمالي المصاريف: ${analysisResults.financialSummary?.totalExpenses?.toLocaleString() || '0'} دج
+• صافي الربح: ${analysisResults.financialSummary?.netProfit?.toLocaleString() || '0'} دج
+
+🤖 التحليل من الذكاء الاصطناعي:
+${aiAnalysis.aiRecommendations || 'لا يوجد تحليل متاح'}
+
+=====================================
+تم إنشاء هذا التقرير بواسطة Rased AI
+      `;
+
+      // تنزيل التقرير كملف نصي
+      const blob = new Blob([report], { type: 'text/plain;charset=utf-8' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `تقرير_التحليل_${new Date().getTime()}.txt`;
+      link.click();
+    }
+
+    async function saveCompanyData(analysis) {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      if (!currentUser) return;
+
+      try {
+        // البحث عن شركة موجودة بنفس الاسم
+        const response = await fetch(`/projects/${currentUser.id}`);
+        const data = await response.json();
+
+        if (data.success) {
+          const existingProject = data.projects.find(p => 
+            p.name && analysis.companyInfo.name && 
+            p.name.toLowerCase().includes(analysis.companyInfo.name.toLowerCase())
+          );
+
+          if (existingProject) {
+            // تحديث المشروع الموجود
+            const updatedProject = {
+              ...existingProject,
+              lastDataUpdate: new Date().toISOString(),
+              dataFiles: [...(existingProject.dataFiles || []), {
+                fileName: analysis.fileName,
+                fileType: analysis.fileType,
+                uploadDate: analysis.uploadDate,
+                recordCount: analysis.totalRecords
+              }],
+              monthly_revenue: analysis.financialSummary.totalRevenue || existingProject.monthly_revenue,
+              monthly_expenses: analysis.financialSummary.totalExpenses || existingProject.monthly_expenses,
+              net_profit: analysis.financialSummary.netProfit || existingProject.net_profit
+            };
+
+            await fetch('/update-project', {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                userId: currentUser.id,
+                projectId: existingProject.id,
+                project: updatedProject
+              })
+            });
+          } else {
+            // إنشاء مشروع جديد
+            const newProject = {
+              name: analysis.companyInfo.name || `شركة من ملف ${analysis.fileName}`,
+              description: `تم إنشاء هذا المشروع تلقائياً من ملف ${analysis.fileName}`,
+              region: analysis.companyInfo.location || 'غير محدد',
+              activity_type: analysis.companyInfo.industry || 'غير محدد',
+              establishment_date: analysis.companyInfo.establishmentDate || new Date().toISOString().split('T')[0],
+              employees_count: analysis.companyInfo.employees || 0,
+              managers_count: 1,
+              initial_capital: 0,
+              monthly_revenue: analysis.financialSummary.totalRevenue || 0,
+              monthly_expenses: analysis.financialSummary.totalExpenses || 0,
+              net_profit: analysis.financialSummary.netProfit || 0,
+              target_market: 'محلي',
+              current_stage: 'تشغيل',
+              funding_needs: 'لا',
+              funding_amount: 0,
+              tax_status: 'غير محدد',
+              commercial_register: '',
+              dataFiles: [{
+                fileName: analysis.fileName,
+                fileType: analysis.fileType,
+                uploadDate: analysis.uploadDate,
+                recordCount: analysis.totalRecords
+              }],
+              autoCreated: true
+            };
+
+            await fetch('/add-project', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                userId: currentUser.id,
+                project: newProject
+              })
+            });
+          }
+        }
+      } catch (error) {
+        console.error('خطأ في حفظ بيانات الشركة:', error);
+      }
+    }
+
+    async function handleUpload() {
+      const fileInput = document.getElementById('excelFile');
+      const file = fileInput.files[0];
+
+      if (!file) {
+        alert('⚠ الرجاء اختيار ملف Excel');
+        return;
+      }
+
+      console.log('🔍 بدء معالجة الملف:', file.name);
+      
+      // عرض شريط التقدم
+      showProgressBar();
+
+      const reader = new FileReader();
+      reader.onload = async function(e) {
+        try {
+          updateProgress(20, 'قراءة الملف...');
+
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+
+          updateProgress(40, 'استخراج البيانات...');
+
+          const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+          const jsonData = XLSX.utils.sheet_to_json(firstSheet, { defval: "" });
+
+          console.log('📊 تم استخراج البيانات:', jsonData.length, 'سجل');
+
+          if (jsonData.length === 0) {
+            alert('⚠ الملف لا يحتوي على بيانات صالحة');
+            hideProgressBar();
+            return;
+          }
+
+          updateProgress(60, 'تحليل نوع البيانات...');
+
+          // تحديد نوع الملف وتحليل البيانات
+          const fileType = detectFileType(file.name, jsonData);
+          console.log('📝 نوع الملف المحدد:', fileType);
+
+          updateProgress(80, 'معالجة البيانات...');
+
+          // تحليل البيانات
+          analyzeData(jsonData, fileType);
+
+          // استخراج معلومات الشركة
+          const companyInfo = extractCompanyInfo(jsonData, fileType);
+          const financialSummary = calculateFinancialSummary(jsonData, fileType);
+
+          console.log('🏢 معلومات الشركة:', companyInfo);
+          console.log('💰 الملخص المالي:', financialSummary);
+
+          // إعداد التحليل الكامل
+          const analysisResult = {
+            fileName: file.name,
+            fileType: fileType,
+            data: jsonData,
+            uploadDate: new Date().toISOString(),
+            totalRecords: jsonData.length,
+            columns: Object.keys(jsonData[0] || {}),
+            companyInfo: companyInfo,
+            financialSummary: financialSummary
+          };
+
+          // حفظ البيانات
+          localStorage.setItem('excelData', JSON.stringify(jsonData));
+          localStorage.setItem('fileType', fileType);
+          localStorage.setItem('analysisResults', JSON.stringify(analysisResult));
+          localStorage.setItem('lastAnalysisDate', new Date().toISOString());
+
+          updateProgress(90, 'جاري معالجة البيانات...');
+
+          // إرسال البيانات للذكاء الاصطناعي للتحليل الشامل
+          await sendDataToAI(analysisResult);
+
+          // حفظ معلومات الشركة تلقائياً
+          await saveCompanyData(analysisResult);
+
+          updateProgress(100, 'اكتمل التحليل');
+
+          setTimeout(() => {
+            hideProgressBar();
+            console.log('✅ تم إكمال التحليل بنجاح');
+            alert('✅ تم تحليل الملف بنجاح يمكنك الآن رؤية التحليل الشامل من الذكاء الاصطناعي أدناه.');
+          }, 1000);
+
+        } catch (error) {
+          console.error('❌ خطأ في معالجة الملف:', error);
+          alert('❌ حدث خطأ أثناء معالجة الملف: ' + error.message);
+          hideProgressBar();
+        }
+      };
+
+      reader.readAsArrayBuffer(file);
+    }
+  </script>
+</body>
+</html>

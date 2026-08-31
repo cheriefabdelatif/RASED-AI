@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>إضافة مشروع - Rased AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <style>
+    body { font-family: 'Cairo', sans-serif; }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-800 p-4 font-sans">
+
+  <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-8">
+    <h1 class="text-2xl font-bold mb-6 text-center text-indigo-600">📁 إضافة مشروع جديد</h1>
+
+    <form id="add-project-form" class="space-y-6">
+      <!-- المعلومات الأساسية -->
+      <div class="bg-blue-50 p-4 rounded-lg">
+        <h2 class="text-lg font-semibold mb-4 text-blue-800">📋 المعلومات الأساسية</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium mb-1">اسم المشروع *</label>
+            <input type="text" id="name" class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">الولاية / المدينة *</label>
+            <select id="region" class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500" required>
+              <option value="">اختر الولاية</option>
+              <option value="الجزائر العاصمة">الجزائر العاصمة</option>
+              <option value="وهران">وهران</option>
+              <option value="قسنطينة">قسنطينة</option>
+              <option value="عنابة">عنابة</option>
+              <option value="بليدة">البليدة</option>
+              <option value="باتنة">باتنة</option>
+              <option value="سطيف">سطيف</option>
+              <option value="سيدي بلعباس">سيدي بلعباس</option>
+              <option value="بسكرة">بسكرة</option>
+              <option value="تلمسان">تلمسان</option>
+              <option value="أخرى">أخرى</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">نوع النشاط *</label>
+            <select id="activity_type" class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500" required>
+              <option value="">اختر نوع النشاط</option>
+              <option value="تجارة">تجارة</option>
+              <option value="صناعة">صناعة</option>
+              <option value="خدمات">خدمات</option>
+              <option value="تكنولوجيا">تكنولوجيا</option>
+              <option value="زراعة">زراعة</option>
+              <option value="سياحة">سياحة</option>
+              <option value="تعليم">تعليم</option>
+              <option value="صحة">صحة</option>
+              <option value="أخرى">أخرى</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">تاريخ الإنشاء *</label>
+            <input type="date" id="establishment_date" class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500" required>
+          </div>
+        </div>
+        <div class="mt-4">
+          <label class="block text-sm font-medium mb-1">وصف المشروع *</label>
+          <textarea id="description" class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500" rows="3" required></textarea>
+        </div>
+      </div>
+
+      <!-- الموارد البشرية -->
+      <div class="bg-green-50 p-4 rounded-lg">
+        <h2 class="text-lg font-semibold mb-4 text-green-800">👥 الموارد البشرية</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium mb-1">عدد العمال الدائمين</label>
+            <input type="number" id="employees_count" class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500" min="0" value="0">
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">عدد المدراء / المؤسسين</label>
+            <input type="number" id="managers_count" class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500" min="1" value="1">
+          </div>
+        </div>
+      </div>
+
+      <!-- المعلومات المالية -->
+      <div class="bg-yellow-50 p-4 rounded-lg">
+        <h2 class="text-lg font-semibold mb-4 text-yellow-800">💰 المعلومات المالية</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium mb-1">رأس المال الابتدائي (دج) *</label>
+            <input type="number" id="initial_capital" class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500" min="0" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">متوسط الإيرادات الشهرية (دج) *</label>
+            <input type="number" id="monthly_revenue" class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500" min="0" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">متوسط المصاريف الشهرية (دج) *</label>
+            <input type="number" id="monthly_expenses" class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500" min="0" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">صافي الربح الشهري (دج)</label>
+            <input type="number" id="net_profit" class="w-full px-3 py-2 border rounded-md bg-gray-100" readonly>
+          </div>
+        </div>
+      </div>
+
+      <!-- معلومات السوق والتطوير -->
+      <div class="bg-purple-50 p-4 rounded-lg">
+        <h2 class="text-lg font-semibold mb-4 text-purple-800">📈 معلومات السوق والتطوير</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium mb-1">السوق المستهدف</label>
+            <select id="target_market" class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500">
+              <option value="محلي">محلي</option>
+              <option value="ولائي">ولائي</option>
+              <option value="وطني">وطني</option>
+              <option value="إقليمي">إقليمي (شمال أفريقيا)</option>
+              <option value="دولي">دولي / تصدير</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">مرحلة المشروع</label>
+            <select id="current_stage" class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500">
+              <option value="فكرة">فكرة</option>
+              <option value="تخطيط">تخطيط</option>
+              <option value="MVP">MVP (منتج أولي)</option>
+              <option value="تشغيل">تشغيل</option>
+              <option value="نمو">نمو</option>
+              <option value="توسع">توسع</option>
+              <option value="نضج">نضج</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- التمويل والقانون -->
+      <div class="bg-red-50 p-4 rounded-lg">
+        <h2 class="text-lg font-semibold mb-4 text-red-800">⚖️ التمويل والقانون</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium mb-1">هل يحتاج تمويل؟</label>
+            <select id="funding_needs" class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500">
+              <option value="لا">لا</option>
+              <option value="نعم">نعم</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">مبلغ التمويل المطلوب (دج)</label>
+            <input type="number" id="funding_amount" class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500" min="0" disabled>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">حالة التسجيل الجبائي</label>
+            <select id="tax_status" class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500">
+              <option value="غير مسجل">غير مسجل</option>
+              <option value="مسجل">مسجل</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">رقم التسجيل التجاري (إن وجد)</label>
+            <input type="text" id="commercial_register" class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500">
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center space-x-4">
+        <button type="submit" class="bg-indigo-600 text-white py-3 px-8 rounded-lg hover:bg-indigo-700 transition font-semibold">
+          📥 حفظ المشروع
+        </button>
+        <button type="button" onclick="window.history.back()" class="bg-gray-500 text-white py-3 px-8 rounded-lg hover:bg-gray-600 transition font-semibold">
+          ← الرجوع
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    // حساب صافي الربح تلقائياً
+    function calculateNetProfit() {
+      const revenue = parseFloat(document.getElementById('monthly_revenue').value) || 0;
+      const expenses = parseFloat(document.getElementById('monthly_expenses').value) || 0;
+      document.getElementById('net_profit').value = revenue - expenses;
+    }
+
+    document.getElementById('monthly_revenue').addEventListener('input', calculateNetProfit);
+    document.getElementById('monthly_expenses').addEventListener('input', calculateNetProfit);
+
+    // تفعيل/إلغاء تفعيل حقل مبلغ التمويل
+    document.getElementById('funding_needs').addEventListener('change', function() {
+      const fundingAmount = document.getElementById('funding_amount');
+      if (this.value === 'نعم') {
+        fundingAmount.disabled = false;
+        fundingAmount.required = true;
+      } else {
+        fundingAmount.disabled = true;
+        fundingAmount.required = false;
+        fundingAmount.value = '';
+      }
+    });
+
+    // إرسال النموذج
+    document.getElementById('add-project-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      if (!currentUser) {
+        alert('يجب تسجيل الدخول أولاً');
+        window.location.href = 'index.html';
+        return;
+      }
+
+      const project = {
+        name: document.getElementById('name').value,
+        description: document.getElementById('description').value,
+        region: document.getElementById('region').value,
+        activity_type: document.getElementById('activity_type').value,
+        establishment_date: document.getElementById('establishment_date').value,
+        employees_count: parseInt(document.getElementById('employees_count').value) || 0,
+        managers_count: parseInt(document.getElementById('managers_count').value) || 1,
+        initial_capital: parseFloat(document.getElementById('initial_capital').value) || 0,
+        monthly_revenue: parseFloat(document.getElementById('monthly_revenue').value) || 0,
+        monthly_expenses: parseFloat(document.getElementById('monthly_expenses').value) || 0,
+        net_profit: parseFloat(document.getElementById('net_profit').value) || 0,
+        target_market: document.getElementById('target_market').value,
+        current_stage: document.getElementById('current_stage').value,
+        funding_needs: document.getElementById('funding_needs').value,
+        funding_amount: parseFloat(document.getElementById('funding_amount').value) || 0,
+        tax_status: document.getElementById('tax_status').value,
+        commercial_register: document.getElementById('commercial_register').value
+      };
+
+      try {
+        const response = await fetch('/add-project', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            userId: currentUser.id,
+            project: project
+          })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            alert('✅ تم حفظ المشروع بنجاح!');
+            document.getElementById('add-project-form').reset();
+            setTimeout(() => {
+              window.location.href = "projects.html";
+            }, 1000);
+          } else {
+            if (data.requiresUpgrade) {
+              // عرض رسالة الترقية
+              const upgradeConfirm = confirm(data.message + '\n\nهل تريد الترقية للخطة المدفوعة؟');
+              if (upgradeConfirm) {
+                window.open('https://wa.me/213665028481?text=أريد الترقية للخطة الاحترافية للحصول على مشاريع غير محدودة', '_blank');
+              }
+            } else {
+              alert('❌ فشل في حفظ المشروع: ' + data.message);
+            }
+          }
+        } else {
+          alert('❌ خطأ في الاتصال بالخادم');
+        }
+      } catch (error) {
+        alert('❌ خطأ في الاتصال بالخادم');
+      }
+    });
+  </script>
+</body>
+</html>

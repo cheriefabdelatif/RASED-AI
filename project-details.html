@@ -1,0 +1,398 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تفاصيل المشروع - Rased AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <style>
+    body { font-family: 'Cairo', sans-serif; }
+    .edit-mode input, .edit-mode select, .edit-mode textarea {
+      border: 2px solid #3b82f6;
+      background-color: #eff6ff;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+  <!-- الشريط العلوي -->
+  <header class="bg-indigo-600 text-white py-4 shadow-md">
+    <div class="container mx-auto flex justify-between items-center px-4">
+      <h1 class="text-2xl font-bold">تفاصيل المشروع - Rased AI</h1>
+      <div class="flex gap-2">
+        <button onclick="window.location.href='projects.html'" class="bg-gray-500 hover:bg-gray-600 px-4 py-2 rounded-md text-sm">عودة للمشاريع</button>
+        <button onclick="logout()" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-md text-sm">تسجيل الخروج</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- محتوى الصفحة -->
+  <main class="container mx-auto px-4 py-8">
+    <div class="bg-white rounded-lg shadow-lg p-8 max-w-5xl mx-auto">
+      
+      <!-- عنوان المشروع -->
+      <div class="flex justify-between items-center mb-6">
+        <h2 id="project-title" class="text-3xl font-bold text-indigo-600">اسم المشروع</h2>
+        <div class="flex gap-2">
+          <button id="edit-btn" onclick="toggleEditMode()" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md">
+            <i class="fas fa-edit"></i> تعديل
+          </button>
+          <button id="save-btn" onclick="saveProject()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md hidden">
+            <i class="fas fa-save"></i> حفظ
+          </button>
+          <button id="cancel-btn" onclick="cancelEdit()" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md hidden">
+            إلغاء
+          </button>
+        </div>
+      </div>
+
+      <form id="project-form">
+        <!-- المعلومات الأساسية -->
+        <div class="bg-blue-50 p-6 rounded-lg mb-6">
+          <h3 class="text-lg font-semibold mb-4 text-blue-800">📋 المعلومات الأساسية</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium mb-1">اسم المشروع</label>
+              <input type="text" id="name" class="w-full px-3 py-2 border rounded-md" readonly>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">الولاية / المدينة</label>
+              <select id="region" class="w-full px-3 py-2 border rounded-md" disabled>
+                <option value="الجزائر العاصمة">الجزائر العاصمة</option>
+                <option value="وهران">وهران</option>
+                <option value="قسنطينة">قسنطينة</option>
+                <option value="عنابة">عنابة</option>
+                <option value="بليدة">البليدة</option>
+                <option value="باتنة">باتنة</option>
+                <option value="سطيف">سطيف</option>
+                <option value="سيدي بلعباس">سيدي بلعباس</option>
+                <option value="بسكرة">بسكرة</option>
+                <option value="تلمسان">تلمسان</option>
+                <option value="أخرى">أخرى</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">نوع النشاط</label>
+              <select id="activity_type" class="w-full px-3 py-2 border rounded-md" disabled>
+                <option value="تجارة">تجارة</option>
+                <option value="صناعة">صناعة</option>
+                <option value="خدمات">خدمات</option>
+                <option value="تكنولوجيا">تكنولوجيا</option>
+                <option value="زراعة">زراعة</option>
+                <option value="سياحة">سياحة</option>
+                <option value="تعليم">تعليم</option>
+                <option value="صحة">صحة</option>
+                <option value="أخرى">أخرى</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">تاريخ الإنشاء</label>
+              <input type="date" id="establishment_date" class="w-full px-3 py-2 border rounded-md" readonly>
+            </div>
+          </div>
+          <div class="mt-4">
+            <label class="block text-sm font-medium mb-1">وصف المشروع</label>
+            <textarea id="description" class="w-full px-3 py-2 border rounded-md" rows="3" readonly></textarea>
+          </div>
+        </div>
+
+        <!-- الموارد البشرية -->
+        <div class="bg-green-50 p-6 rounded-lg mb-6">
+          <h3 class="text-lg font-semibold mb-4 text-green-800">👥 الموارد البشرية</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium mb-1">عدد العمال الدائمين</label>
+              <input type="number" id="employees_count" class="w-full px-3 py-2 border rounded-md" readonly>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">عدد المدراء / المؤسسين</label>
+              <input type="number" id="managers_count" class="w-full px-3 py-2 border rounded-md" readonly>
+            </div>
+          </div>
+        </div>
+
+        <!-- المعلومات المالية -->
+        <div class="bg-yellow-50 p-6 rounded-lg mb-6">
+          <h3 class="text-lg font-semibold mb-4 text-yellow-800">💰 المعلومات المالية</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium mb-1">رأس المال الابتدائي (دج)</label>
+              <input type="number" id="initial_capital" class="w-full px-3 py-2 border rounded-md" readonly>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">متوسط الإيرادات الشهرية (دج)</label>
+              <input type="number" id="monthly_revenue" class="w-full px-3 py-2 border rounded-md" readonly>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">متوسط المصاريف الشهرية (دج)</label>
+              <input type="number" id="monthly_expenses" class="w-full px-3 py-2 border rounded-md" readonly>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">صافي الربح الشهري (دج)</label>
+              <input type="number" id="net_profit" class="w-full px-3 py-2 border rounded-md bg-gray-100" readonly>
+            </div>
+          </div>
+        </div>
+
+        <!-- معلومات السوق والتطوير -->
+        <div class="bg-purple-50 p-6 rounded-lg mb-6">
+          <h3 class="text-lg font-semibold mb-4 text-purple-800">📈 معلومات السوق والتطوير</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium mb-1">السوق المستهدف</label>
+              <select id="target_market" class="w-full px-3 py-2 border rounded-md" disabled>
+                <option value="محلي">محلي</option>
+                <option value="ولائي">ولائي</option>
+                <option value="وطني">وطني</option>
+                <option value="إقليمي">إقليمي (شمال أفريقيا)</option>
+                <option value="دولي">دولي / تصدير</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">مرحلة المشروع</label>
+              <select id="current_stage" class="w-full px-3 py-2 border rounded-md" disabled>
+                <option value="فكرة">فكرة</option>
+                <option value="تخطيط">تخطيط</option>
+                <option value="MVP">MVP (منتج أولي)</option>
+                <option value="تشغيل">تشغيل</option>
+                <option value="نمو">نمو</option>
+                <option value="توسع">توسع</option>
+                <option value="نضج">نضج</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- التمويل والقانون -->
+        <div class="bg-red-50 p-6 rounded-lg mb-6">
+          <h3 class="text-lg font-semibold mb-4 text-red-800">⚖️ التمويل والقانون</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium mb-1">هل يحتاج تمويل؟</label>
+              <select id="funding_needs" class="w-full px-3 py-2 border rounded-md" disabled>
+                <option value="لا">لا</option>
+                <option value="نعم">نعم</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">مبلغ التمويل المطلوب (دج)</label>
+              <input type="number" id="funding_amount" class="w-full px-3 py-2 border rounded-md" readonly>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">حالة التسجيل الجبائي</label>
+              <select id="tax_status" class="w-full px-3 py-2 border rounded-md" disabled>
+                <option value="غير مسجل">غير مسجل</option>
+                <option value="مسجل">مسجل</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">رقم التسجيل التجاري</label>
+              <input type="text" id="commercial_register" class="w-full px-3 py-2 border rounded-md" readonly>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <!-- معلومات إضافية -->
+      <div class="bg-gray-50 p-4 rounded-lg mt-6">
+        <h3 class="text-sm font-semibold mb-2 text-gray-600">معلومات إضافية</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+          <div>تاريخ الإنشاء: <span id="creation-date"></span></div>
+          <div>آخر تعديل: <span id="last-modified"></span></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let currentProject = null;
+    let isEditMode = false;
+
+    // تحميل المشروع عند تحميل الصفحة
+    window.addEventListener('load', function() {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      if (!currentUser) {
+        alert('يجب تسجيل الدخول أولاً');
+        window.location.href = 'index.html';
+        return;
+      }
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const projectId = urlParams.get('id');
+      
+      if (!projectId) {
+        alert('معرف المشروع غير صحيح');
+        window.location.href = 'projects.html';
+        return;
+      }
+
+      loadProject(currentUser.id, projectId);
+    });
+
+    async function loadProject(userId, projectId) {
+      try {
+        const response = await fetch(`/projects/${userId}`);
+        const data = await response.json();
+        
+        if (data.success) {
+          const project = data.projects.find(p => p.id === projectId);
+          if (project) {
+            currentProject = project;
+            displayProject(project);
+          } else {
+            alert('المشروع غير موجود');
+            window.location.href = 'projects.html';
+          }
+        } else {
+          alert('فشل في تحميل المشروع');
+        }
+      } catch (error) {
+        alert('خطأ في الاتصال بالخادم');
+      }
+    }
+
+    function displayProject(project) {
+      document.getElementById('project-title').textContent = project.name;
+      document.getElementById('name').value = project.name || '';
+      document.getElementById('region').value = project.region || '';
+      document.getElementById('activity_type').value = project.activity_type || '';
+      document.getElementById('establishment_date').value = project.establishment_date || '';
+      document.getElementById('description').value = project.description || '';
+      document.getElementById('employees_count').value = project.employees_count || 0;
+      document.getElementById('managers_count').value = project.managers_count || 1;
+      document.getElementById('initial_capital').value = project.initial_capital || 0;
+      document.getElementById('monthly_revenue').value = project.monthly_revenue || 0;
+      document.getElementById('monthly_expenses').value = project.monthly_expenses || 0;
+      document.getElementById('net_profit').value = project.net_profit || 0;
+      document.getElementById('target_market').value = project.target_market || 'محلي';
+      document.getElementById('current_stage').value = project.current_stage || 'فكرة';
+      document.getElementById('funding_needs').value = project.funding_needs || 'لا';
+      document.getElementById('funding_amount').value = project.funding_amount || 0;
+      document.getElementById('tax_status').value = project.tax_status || 'غير مسجل';
+      document.getElementById('commercial_register').value = project.commercial_register || '';
+
+      // عرض التواريخ
+      document.getElementById('creation-date').textContent = new Date(project.date).toLocaleString('ar-DZ');
+      document.getElementById('last-modified').textContent = project.lastModified ? 
+        new Date(project.lastModified).toLocaleString('ar-DZ') : 'لم يتم التعديل';
+    }
+
+    function toggleEditMode() {
+      isEditMode = !isEditMode;
+      const form = document.getElementById('project-form');
+      
+      if (isEditMode) {
+        form.classList.add('edit-mode');
+        // تفعيل جميع الحقول
+        const inputs = form.querySelectorAll('input:not([id="net_profit"]), select, textarea');
+        inputs.forEach(input => {
+          input.removeAttribute('readonly');
+          input.removeAttribute('disabled');
+        });
+        
+        // إظهار أزرار الحفظ والإلغاء
+        document.getElementById('edit-btn').classList.add('hidden');
+        document.getElementById('save-btn').classList.remove('hidden');
+        document.getElementById('cancel-btn').classList.remove('hidden');
+      } else {
+        form.classList.remove('edit-mode');
+        // تعطيل جميع الحقول
+        const inputs = form.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+          if (input.type === 'text' || input.type === 'number' || input.type === 'date' || input.tagName === 'TEXTAREA') {
+            input.setAttribute('readonly', true);
+          } else {
+            input.setAttribute('disabled', true);
+          }
+        });
+        
+        // إظهار زر التعديل
+        document.getElementById('edit-btn').classList.remove('hidden');
+        document.getElementById('save-btn').classList.add('hidden');
+        document.getElementById('cancel-btn').classList.add('hidden');
+      }
+    }
+
+    async function saveProject() {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      
+      const updatedProject = {
+        name: document.getElementById('name').value,
+        description: document.getElementById('description').value,
+        region: document.getElementById('region').value,
+        activity_type: document.getElementById('activity_type').value,
+        establishment_date: document.getElementById('establishment_date').value,
+        employees_count: parseInt(document.getElementById('employees_count').value) || 0,
+        managers_count: parseInt(document.getElementById('managers_count').value) || 1,
+        initial_capital: parseFloat(document.getElementById('initial_capital').value) || 0,
+        monthly_revenue: parseFloat(document.getElementById('monthly_revenue').value) || 0,
+        monthly_expenses: parseFloat(document.getElementById('monthly_expenses').value) || 0,
+        net_profit: parseFloat(document.getElementById('monthly_revenue').value || 0) - parseFloat(document.getElementById('monthly_expenses').value || 0),
+        target_market: document.getElementById('target_market').value,
+        current_stage: document.getElementById('current_stage').value,
+        funding_needs: document.getElementById('funding_needs').value,
+        funding_amount: parseFloat(document.getElementById('funding_amount').value) || 0,
+        tax_status: document.getElementById('tax_status').value,
+        commercial_register: document.getElementById('commercial_register').value
+      };
+
+      try {
+        const response = await fetch('/update-project', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            userId: currentUser.id,
+            projectId: currentProject.id,
+            project: updatedProject
+          })
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+          alert('✅ تم حفظ التعديلات بنجاح!');
+          currentProject = data.project;
+          document.getElementById('net_profit').value = updatedProject.net_profit;
+          toggleEditMode(); // الخروج من وضع التعديل
+          // تحديث تاريخ آخر تعديل
+          document.getElementById('last-modified').textContent = new Date().toLocaleString('ar-DZ');
+        } else {
+          alert(`❌ ${data.message}`);
+        }
+      } catch (error) {
+        alert('❌ خطأ في الاتصال بالخادم');
+      }
+    }
+
+    function cancelEdit() {
+      displayProject(currentProject); // إعادة عرض البيانات الأصلية
+      toggleEditMode(); // الخروج من وضع التعديل
+    }
+
+    function logout() {
+      localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('currentUser');
+      alert('تم تسجيل الخروج');
+      window.location.href = 'index.html';
+    }
+
+    // حساب صافي الربح تلقائياً أثناء التعديل
+    document.getElementById('monthly_revenue').addEventListener('input', calculateNetProfit);
+    document.getElementById('monthly_expenses').addEventListener('input', calculateNetProfit);
+
+    function calculateNetProfit() {
+      if (isEditMode) {
+        const revenue = parseFloat(document.getElementById('monthly_revenue').value) || 0;
+        const expenses = parseFloat(document.getElementById('monthly_expenses').value) || 0;
+        document.getElementById('net_profit').value = revenue - expenses;
+      }
+    }
+  </script>
+
+</body>
+</html>

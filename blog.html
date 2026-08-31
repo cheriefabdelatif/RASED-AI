@@ -1,0 +1,137 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>المدونة - Rased AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <style>
+    body { font-family: 'Cairo', sans-serif; }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+  
+  <header class="bg-indigo-600 text-white py-4 shadow-md">
+    <div class="container mx-auto flex justify-between items-center px-4">
+      <h1 class="text-xl font-bold">📝 المدونة</h1>
+      <a href="index.html" class="bg-white text-indigo-600 px-4 py-2 rounded hover:bg-gray-200 text-sm">
+        العودة للصفحة الرئيسية
+      </a>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl font-bold text-gray-900 mb-4">مقالات وأخبار</h2>
+      <p class="text-xl text-gray-600">آخر الأخبار والنصائح لرواد الأعمال</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <!-- مقال 1 -->
+      <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div class="bg-indigo-100 h-48 flex items-center justify-center">
+          <i class="fas fa-chart-line text-4xl text-indigo-600"></i>
+        </div>
+        <div class="p-6">
+          <h3 class="text-xl font-bold mb-2">كيفية تحليل البيانات المالية لمشروعك</h3>
+          <p class="text-gray-600 mb-4">تعلم أساسيات تحليل البيانات المالية وكيفية استخدام الذكاء الاصطناعي لتحسين قراراتك التجارية.</p>
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-gray-500">منذ 3 أيام</span>
+            <a href="article1.html" class="text-indigo-600 hover:text-indigo-800">اقرأ المزيد →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- مقال 2 -->
+      <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div class="bg-green-100 h-48 flex items-center justify-center">
+          <i class="fas fa-lightbulb text-4xl text-green-600"></i>
+        </div>
+        <div class="p-6">
+          <h3 class="text-xl font-bold mb-2">5 نصائح لتطوير مشروعك الناشئ</h3>
+          <p class="text-gray-600 mb-4">اكتشف أفضل الممارسات لتطوير مشروعك الناشئ وتحقيق النجاح في السوق الجزائري.</p>
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-gray-500">منذ أسبوع</span>
+            <a href="article2.html" class="text-indigo-600 hover:text-indigo-800">اقرأ المزيد →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- مقال 3 -->
+      <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div class="bg-purple-100 h-48 flex items-center justify-center">
+          <i class="fas fa-robot text-4xl text-purple-600"></i>
+        </div>
+        <div class="p-6">
+          <h3 class="text-xl font-bold mb-2">الذكاء الاصطناعي في إدارة المشاريع</h3>
+          <p class="text-gray-600 mb-4">كيف يمكن للذكاء الاصطناعي أن يساعد في تحسين إدارة مشروعك وزيادة الكفاءة.</p>
+          <div class="flex justify-between items-center">
+            <span class="text-sm text-gray-500">منذ أسبوعين</span>
+            <a href="article3.html" class="text-indigo-600 hover:text-indigo-800">اقرأ المزيد →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center mt-12">
+      <p class="text-gray-600">قريباً المزيد من المقالات والنصائح المفيدة</p>
+    </div>
+  </main>
+
+  <footer class="bg-gray-800 text-white py-8 mt-12">
+    <div class="container mx-auto px-4 text-center">
+      <p>© 2025 Rased AI. جميع الحقوق محفوظة.</p>
+    </div>
+  </footer>
+
+  <script>
+    function readArticle(articleId) {
+      const articles = {
+        'financial-analysis': {
+          title: 'كيفية تحليل البيانات المالية لمشروعك',
+          content: `تحليل البيانات المالية هو عملية أساسية لفهم أداء مشروعك وإتخاذ قرارات مدروسة. يساعدك الذكاء الاصطناعي في Rased AI على:
+
+• تحليل تلقائي للمؤشرات المالية الرئيسية
+• مقارنة الأداء عبر فترات زمنية مختلفة  
+• توقع الاتجاهات المستقبلية
+• اكتشاف الأنماط والتوجهات في البيانات
+• تحديد نقاط القوة والضعف في الأداء المالي
+
+استخدم منصة Rased AI لتحليل بياناتك بطريقة احترافية واحصل على رؤى عميقة حول مشروعك.`
+        },
+        'startup-tips': {
+          title: '5 نصائح لتطوير مشروعك الناشئ',
+          content: `إليك أهم 5 نصائح لنجاح مشروعك الناشئ في السوق الجزائري:
+
+1. دراسة السوق بعناية: افهم احتياجات عملائك المحتملين والمنافسة الموجودة
+2. التخطيط المالي السليم: وضع خطة مالية واقعية ومتابعة التدفق النقدي
+3. بناء فريق قوي: اختر شركاء ومعاونين يشاركونك الرؤية والشغف
+4. التركيز على جودة المنتج: قدم قيمة حقيقية لعملائك قبل التفكير في التوسع
+5. استخدام التكنولوجيا: اعتمد على أدوات ذكية مثل Rased AI لتحليل الأداء واتخاذ القرارات
+
+ابدأ بتطبيق هذه النصائح واستخدم منصتنا لمتابعة تقدم مشروعك.`
+        },
+        'ai-management': {
+          title: 'الذكاء الاصطناعي في إدارة المشاريع',
+          content: `الذكاء الاصطناعي يُحدث ثورة في طريقة إدارة المشاريع. إليك كيف يمكن أن يساعدك:
+
+• التحليل التنبؤي: توقع التحديات والفرص المستقبلية
+• أتمتة المهام الروتينية: توفير الوقت للتركيز على القرارات الاستراتيجية
+• تحليل البيانات في الوقت الفعلي: اتخاذ قرارات سريعة ومدروسة
+• تحسين الكفاءة التشغيلية: تحديد نقاط التحسين والتطوير
+• إدارة المخاطر: تحديد وتقييم المخاطر المحتملة مبكراً
+
+Rased AI يوفر لك هذه الإمكانيات وأكثر لضمان نجاح مشروعك.`
+        }
+      };
+
+      const article = articles[articleId];
+      if (article) {
+        alert(`${article.title}\n\n${article.content}\n\nللمزيد من المقالات والتحليلات المتقدمة، انضم لمنصة Rased AI.`);
+      }
+    }
+  </script>
+
+</body>
+</html>

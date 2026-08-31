@@ -1,0 +1,339 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>توصيات ذكية - Rased AI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <style>
+    body { font-family: 'Cairo', sans-serif; background-color: #f9fafb; }
+  </style>
+</head>
+<body class="text-gray-800">
+
+  <!-- رأس الصفحة -->
+  <header class="bg-indigo-600 text-white py-4 shadow-md">
+    <div class="container mx-auto flex justify-between items-center px-4">
+      <h1 class="text-xl font-bold">💡 التوصيات الذكية</h1>
+      <a href="dashboard.html" class="bg-white text-indigo-600 px-4 py-2 rounded hover:bg-gray-200 text-sm">العودة للوحة التحكم</a>
+    </div>
+  </header>
+
+  <!-- اختيار المشروع -->
+  <main class="container mx-auto px-4 py-8">
+    <div class="bg-white shadow-lg rounded-lg p-6 mb-6">
+      <h2 class="text-lg font-semibold mb-4 text-indigo-600">اختر المشروع للحصول على التوصيات</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div>
+          <label class="block text-sm font-medium mb-2">اختر المشروع:</label>
+          <select id="project-selector" class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-indigo-500">
+            <option value="">-- اختر مشروعاً --</option>
+          </select>
+        </div>
+        <div class="flex items-end">
+          <button onclick="generateRecommendations()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-md transition">
+            <i class="fas fa-magic"></i> إنشاء التوصيات
+          </button>
+        </div>
+      </div>
+
+      <!-- معاينة سريعة للمشروع المختار -->
+      <div id="project-preview" class="hidden bg-blue-50 p-4 rounded-lg border">
+        <h3 class="font-semibold mb-2">معاينة المشروع:</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+          <div>
+            <span class="text-gray-600">الإيرادات الشهرية:</span>
+            <div class="font-semibold text-green-600" id="preview-revenue">0 دج</div>
+          </div>
+          <div>
+            <span class="text-gray-600">المصاريف الشهرية:</span>
+            <div class="font-semibold text-red-600" id="preview-expenses">0 دج</div>
+          </div>
+          <div>
+            <span class="text-gray-600">صافي الربح:</span>
+            <div class="font-semibold" id="preview-profit">0 دج</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- التوصيات -->
+    <div id="recommendation-box" class="bg-white shadow-lg rounded-lg p-6 text-sm leading-relaxed">
+      <div class="text-center text-gray-500 py-8">
+        <i class="fas fa-lightbulb text-4xl mb-4"></i>
+        <p>اختر مشروعاً من القائمة أعلاه للحصول على توصيات ذكية مخصصة</p>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let userProjects = [];
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    
+    // التحقق من تسجيل الدخول وتحميل المشاريع
+    window.addEventListener('load', async function() {
+      if (!currentUser) {
+        alert('يجب تسجيل الدخول أولاً');
+        window.location.href = 'index.html';
+        return;
+      }
+      
+      await loadUserProjects();
+    });
+
+    // تحميل مشاريع المستخدم
+    async function loadUserProjects() {
+      try {
+        const response = await fetch(`/projects/${currentUser.id}`);
+        const data = await response.json();
+        
+        if (data.success) {
+          userProjects = data.projects;
+          populateProjectSelector();
+        } else {
+          console.error('فشل في تحميل المشاريع:', data.message);
+        }
+      } catch (error) {
+        console.error('خطأ في الاتصال بالخادم:', error);
+      }
+    }
+
+    // ملء قائمة اختيار المشاريع
+    function populateProjectSelector() {
+      const selector = document.getElementById('project-selector');
+      selector.innerHTML = '<option value="">-- اختر مشروعاً --</option>';
+      
+      if (userProjects.length === 0) {
+        selector.innerHTML += '<option value="" disabled>لا توجد مشاريع مسجلة</option>';
+        return;
+      }
+      
+      userProjects.forEach((project, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.textContent = project.name || `مشروع ${index + 1}`;
+        selector.appendChild(option);
+      });
+    }
+
+    // عرض معاينة المشروع المختار
+    document.getElementById('project-selector').addEventListener('change', function() {
+      const selectedIndex = this.value;
+      const preview = document.getElementById('project-preview');
+      
+      if (selectedIndex === '') {
+        preview.classList.add('hidden');
+        return;
+      }
+      
+      const project = userProjects[selectedIndex];
+      const revenue = project.monthly_revenue || 0;
+      const expenses = project.monthly_expenses || 0;
+      const profit = revenue - expenses;
+      
+      document.getElementById('preview-revenue').textContent = formatNumber(revenue) + ' دج';
+      document.getElementById('preview-expenses').textContent = formatNumber(expenses) + ' دج';
+      document.getElementById('preview-profit').textContent = formatNumber(profit) + ' دج';
+      document.getElementById('preview-profit').className = `font-semibold ${profit >= 0 ? 'text-green-600' : 'text-red-600'}`;
+      
+      preview.classList.remove('hidden');
+    });
+
+    // إنشاء التوصيات للمشروع المختار
+    function generateRecommendations() {
+      const selectedIndex = document.getElementById('project-selector').value;
+      const box = document.getElementById("recommendation-box");
+      
+      if (selectedIndex === '') {
+        box.innerHTML = '<div class="text-center text-red-600 py-8"><i class="fas fa-exclamation-triangle text-2xl mb-2"></i><p>يرجى اختيار مشروع أولاً</p></div>';
+        return;
+      }
+      
+      const project = userProjects[selectedIndex];
+      const revenue = project.monthly_revenue || 0;
+      const expenses = project.monthly_expenses || 0;
+      const margin = revenue - expenses;
+      const marginRate = (revenue > 0) ? (margin / revenue) * 100 : 0;
+      
+      // تنظيف محتوى التوصيات
+      box.innerHTML = '';
+      
+      // عنوان التوصيات
+      const title = document.createElement('div');
+      title.className = 'border-b pb-4 mb-6';
+      title.innerHTML = `
+        <h3 class="text-lg font-bold text-indigo-600 mb-2">
+          <i class="fas fa-chart-line"></i> التوصيات الذكية لمشروع: ${project.name}
+        </h3>
+        <div class="text-sm text-gray-600">
+          <span>نوع النشاط: ${project.activity_type || 'غير محدد'}</span> • 
+          <span>المرحلة: ${project.current_stage || 'غير محدد'}</span> • 
+          <span>المنطقة: ${project.region || 'غير محدد'}</span>
+        </div>
+      `;
+      box.appendChild(title);
+
+      // توليد التوصيات
+      let recommendations = [];
+
+      if (revenue === 0 && expenses === 0) {
+        recommendations.push({
+          type: 'warning',
+          text: "لم يتم إدخال بيانات مالية كافية، يُرجى تعبئة الإيرادات والمصاريف للحصول على توصيات أكثر دقة."
+        });
+      }
+
+      if (margin < 0) {
+        recommendations.push({
+          type: 'danger',
+          text: "المشروع يسجل خسارة شهرية. يُنصح بمراجعة استراتيجية التسعير وتقليل النفقات التشغيلية."
+        });
+        recommendations.push({
+          type: 'info',
+          text: "فكر في إعادة هيكلة المصاريف أو البحث عن مصادر دخل إضافية."
+        });
+      }
+
+      if (marginRate >= 30) {
+        recommendations.push({
+          type: 'success',
+          text: "هامش الربح ممتاز! هذا مؤشر جيد لصحة المشروع المالية."
+        });
+        recommendations.push({
+          type: 'success',
+          text: "فكّر في التوسع أو زيادة الإنتاج للاستفادة من هذا الأداء الممتاز."
+        });
+      } else if (marginRate >= 15) {
+        recommendations.push({
+          type: 'success',
+          text: "الهامش جيد، لكن راقب تطورات السوق وحاول تحسين الكفاءة التشغيلية."
+        });
+      } else if (marginRate > 0 && marginRate < 15) {
+        recommendations.push({
+          type: 'warning',
+          text: "هامش الربح ضعيف. هل يمكنك تقليل التكاليف أو تحسين استراتيجية التسويق؟"
+        });
+      }
+
+      if (expenses > revenue * 0.8 && revenue > 0) {
+        recommendations.push({
+          type: 'warning',
+          text: "المصاريف تمثل أكثر من 80% من الإيرادات، وهذا مقلق. راجع بنود الصرف."
+        });
+      }
+
+      // توصيات حسب نوع النشاط
+      if (project.activity_type === 'تكنولوجيا') {
+        recommendations.push({
+          type: 'info',
+          text: "في قطاع التكنولوجيا، ركز على الابتكار والتطوير المستمر للمنتج."
+        });
+      } else if (project.activity_type === 'تجارة') {
+        recommendations.push({
+          type: 'info',
+          text: "في التجارة، راقب مستويات المخزون وتطوير علاقات قوية مع الموردين."
+        });
+      }
+
+      // توصيات حسب المرحلة
+      if (project.current_stage === 'فكرة' || project.current_stage === 'تخطيط') {
+        recommendations.push({
+          type: 'info',
+          text: "في هذه المرحلة، ركز على دراسة السوق وتطوير نموذج عمل واضح."
+        });
+      } else if (project.current_stage === 'نمو') {
+        recommendations.push({
+          type: 'info',
+          text: "في مرحلة النمو، اهتم بتطوير فريق العمل وتحسين العمليات."
+        });
+      }
+
+      // توصيات التمويل
+      if (project.funding_needs === 'نعم' && project.funding_amount > 0) {
+        recommendations.push({
+          type: 'info',
+          text: `تحتاج تمويل بقيمة ${formatNumber(project.funding_amount)} دج. ادرس خيارات التمويل المختلفة مثل القروض المصرفية أو المستثمرين.`
+        });
+      }
+
+      // عرض التوصيات
+      if (recommendations.length === 0) {
+        recommendations.push({
+          type: 'info',
+          text: "لا توجد توصيات محددة حالياً، استمر في مراقبة مؤشراتك المالية."
+        });
+      }
+
+      recommendations.forEach(rec => {
+        const div = document.createElement('div');
+        let iconClass, bgClass, borderClass;
+        
+        switch(rec.type) {
+          case 'success':
+            iconClass = 'fas fa-check-circle text-green-600';
+            bgClass = 'bg-green-50';
+            borderClass = 'border-green-200';
+            break;
+          case 'warning':
+            iconClass = 'fas fa-exclamation-triangle text-yellow-600';
+            bgClass = 'bg-yellow-50';
+            borderClass = 'border-yellow-200';
+            break;
+          case 'danger':
+            iconClass = 'fas fa-times-circle text-red-600';
+            bgClass = 'bg-red-50';
+            borderClass = 'border-red-200';
+            break;
+          default:
+            iconClass = 'fas fa-info-circle text-blue-600';
+            bgClass = 'bg-blue-50';
+            borderClass = 'border-blue-200';
+        }
+        
+        div.className = `flex items-start p-4 mb-3 rounded-lg border ${bgClass} ${borderClass}`;
+        div.innerHTML = `
+          <i class="${iconClass} mt-1 ml-3 flex-shrink-0"></i>
+          <p class="flex-1">${rec.text}</p>
+        `;
+        box.appendChild(div);
+      });
+
+      // إضافة ملخص مالي
+      const summary = document.createElement('div');
+      summary.className = 'mt-6 p-4 bg-gray-50 rounded-lg border';
+      summary.innerHTML = `
+        <h4 class="font-semibold mb-3 text-gray-700">
+          <i class="fas fa-chart-pie"></i> الملخص المالي
+        </h4>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+          <div class="text-center">
+            <div class="font-bold text-green-600">${formatNumber(revenue)} دج</div>
+            <div class="text-gray-600">الإيرادات الشهرية</div>
+          </div>
+          <div class="text-center">
+            <div class="font-bold text-red-600">${formatNumber(expenses)} دج</div>
+            <div class="text-gray-600">المصاريف الشهرية</div>
+          </div>
+          <div class="text-center">
+            <div class="font-bold ${margin >= 0 ? 'text-green-600' : 'text-red-600'}">${formatNumber(margin)} دج</div>
+            <div class="text-gray-600">صافي الربح</div>
+          </div>
+        </div>
+        <div class="mt-3 text-center">
+          <div class="font-semibold">هامش الربح: ${marginRate.toFixed(1)}%</div>
+        </div>
+      `;
+      box.appendChild(summary);
+    }
+
+    function formatNumber(num) {
+      return new Intl.NumberFormat('ar-DZ').format(num);
+    }
+  </script>
+
+</body>
+</html>

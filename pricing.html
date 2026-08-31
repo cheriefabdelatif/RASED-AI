@@ -1,0 +1,174 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>الأسعار - Rased AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    body { font-family: 'Cairo', sans-serif; }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+  
+  <header class="bg-indigo-600 text-white py-4 shadow-md">
+    <div class="container mx-auto flex justify-between items-center px-4">
+      <h1 class="text-xl font-bold">💰 الأسعار والخطط</h1>
+      <a href="index.html" class="bg-white text-indigo-600 px-4 py-2 rounded hover:bg-gray-200 text-sm">
+        العودة للصفحة الرئيسية
+      </a>
+    </div>
+  </header>
+
+  <main class="container mx-auto px-4 py-8">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl font-bold text-gray-900 mb-4">اختر الخطة المناسبة لك</h2>
+      <p class="text-xl text-gray-600">خطط مرنة تناسب احتياجات مشروعك</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <!-- الخطة المجانية -->
+      <div class="bg-white rounded-lg shadow-lg p-6 border-2 border-gray-200">
+        <h3 class="text-2xl font-bold text-center mb-4">المجانية</h3>
+        <div class="text-center mb-6">
+          <span class="text-4xl font-bold">0</span>
+          <span class="text-gray-600"> دج/شهر</span>
+        </div>
+        <ul class="space-y-3 mb-6">
+          <li class="flex items-center">
+            <i class="fas fa-check text-green-500 mr-2"></i>
+            <span>إضافة 3 مشاريع</span>
+          </li>
+          <li class="flex items-center">
+            <i class="fas fa-check text-green-500 mr-2"></i>
+            <span>تحليل أساسي للبيانات</span>
+          </li>
+          <li class="flex items-center">
+            <i class="fas fa-check text-green-500 mr-2"></i>
+            <span>دردشة محدودة مع الذكاء الاصطناعي</span>
+          </li>
+          <li class="flex items-center">
+            <i class="fas fa-check text-green-500 mr-2"></i>
+            <span>تقارير أساسية</span>
+          </li>
+        </ul>
+        <button class="w-full bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-600 transition">
+          الخطة الحالية
+        </button>
+      </div>
+
+      <!-- الخطة الاحترافية -->
+      <div class="bg-white rounded-lg shadow-lg p-6 border-2 border-indigo-500 relative">
+        <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-indigo-500 text-white px-4 py-1 rounded-full text-sm">
+          الأكثر شعبية
+        </div>
+        <h3 class="text-2xl font-bold text-center mb-4">الاحترافية</h3>
+        <div class="text-center mb-6">
+          <span class="text-4xl font-bold">2999</span>
+          <span class="text-gray-600"> دج/شهر</span>
+        </div>
+        <ul class="space-y-3 mb-6">
+          <li class="flex items-center">
+            <i class="fas fa-check text-green-500 mr-2"></i>
+            <span>مشاريع غير محدودة</span>
+          </li>
+          <li class="flex items-center">
+            <i class="fas fa-check text-green-500 mr-2"></i>
+            <span>تحليل متقدم للبيانات</span>
+          </li>
+          <li class="flex items-center">
+            <i class="fas fa-check text-green-500 mr-2"></i>
+            <span>دردشة غير محدودة مع الذكاء الاصطناعي</span>
+          </li>
+          <li class="flex items-center">
+            <i class="fas fa-check text-green-500 mr-2"></i>
+            <span>تقارير مفصلة</span>
+          </li>
+          <li class="flex items-center">
+            <i class="fas fa-check text-green-500 mr-2"></i>
+            <span>توصيات ذكية مخصصة</span>
+          </li>
+        </ul>
+        <button class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition" onclick="subscribeNow('pro')">
+          اشترك الآن
+        </button>
+      </div>
+
+      <!-- الخطة المتقدمة -->
+      <div class="bg-white rounded-lg shadow-lg p-6 border-2 border-gray-200">
+        <h3 class="text-2xl font-bold text-center mb-4">المتقدمة</h3>
+        <div class="text-center mb-6">
+          <span class="text-4xl font-bold">4999</span>
+          <span class="text-gray-600"> دج/شهر</span>
+        </div>
+        <ul class="space-y-3 mb-6">
+          <li class="flex items-center">
+            <i class="fas fa-check text-green-500 mr-2"></i>
+            <span>كل مميزات الخطة الاحترافية</span>
+          </li>
+          <li class="flex items-center">
+            <i class="fas fa-check text-green-500 mr-2"></i>
+            <span>استشارات شخصية</span>
+          </li>
+          <li class="flex items-center">
+            <i class="fas fa-check text-green-500 mr-2"></i>
+            <span>تحليل السوق المتقدم</span>
+          </li>
+          <li class="flex items-center">
+            <i class="fas fa-check text-green-500 mr-2"></i>
+            <span>دعم أولوية</span>
+          </li>
+          <li class="flex items-center">
+            <i class="fas fa-check text-green-500 mr-2"></i>
+            <span>تدريب مخصص</span>
+          </li>
+        </ul>
+        <button class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition" onclick="contactUs('advanced')">
+          تواصل معنا
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-gray-800 text-white py-8 mt-12">
+    <div class="container mx-auto px-4 text-center">
+      <p>© 2024 Rased AI. جميع الحقوق محفوظة.</p>
+    </div>
+  </footer>
+
+  <script>
+    function subscribeNow(plan) {
+      // التحقق من تسجيل الدخول
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      if (!currentUser) {
+        alert('يجب تسجيل الدخول أولاً للاشتراك');
+        window.location.href = 'index.html';
+        return;
+      }
+      
+      if (plan === 'pro') {
+        alert('🎉 شكراً لاختيارك الخطة الاحترافية!\n\nسيتم توجيهك لإكمال عملية الدفع.\n\nسنتواصل معك قريباً لتأكيد الاشتراك.');
+        
+        // يمكن إضافة توجيه لصفحة الدفع هنا
+        setTimeout(() => {
+          window.open(`https://wa.me/213665028481?text=مرحباً، أريد الاشتراك في الخطة الاحترافية (2999 دج/شهر) - اسم المستخدم: ${currentUser.name}`, '_blank');
+        }, 2000);
+      }
+    }
+    
+    function contactUs(plan) {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+      let message = 'مرحباً، أريد معرفة المزيد حول الخطة المتقدمة (4999 دج/شهر)';
+      
+      if (currentUser) {
+        message += ` - اسم المستخدم: ${currentUser.name}`;
+      }
+      
+      window.open(`https://wa.me/213665028481?text=${encodeURIComponent(message)}`, '_blank');
+    }
+  </script>
+
+</body>
+</html>
